@@ -1,0 +1,1574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Captain is on the board</title>
+    <meta charset="UTF-8" />
+    <script>
+    GLOBALS = {};
+    GLOBALS.BACKEND_HOST = '{{ backend_host }}';
+    GLOBALS.WS_BACKEND_HOST = '{{ ws_backend_host }}';
+    </script>
+
+    <script src="/front/contrib/tui/tuicss.min.js"></script>
+    <script src="/front/contrib/jquery/jquery-3.7.1.min.js"></script>
+    <script src="/front/contrib/apexcharts/apexcharts.min.js"></script>
+    <script src="/front/contrib/jquery/jquery.canvasjs.min.js"></script>
+    <script src="/front/contrib/moment/moment.js"></script>
+    <script src="/front/contrib/select2/select2.min.js"></script>
+
+    <script src="/front/index.js"></script>
+
+    <link rel="stylesheet" href="/front/contrib/tui/tuicss.min.css"/>
+    <link rel="stylesheet" href="/front/contrib/apexcharts/apexcharts.css" />
+    <link rel="stylesheet" href="/front/contrib/select2/select2.min.css" />
+    <link rel="stylesheet" href="/front/index.css" />
+
+<style>
+
+        ul li {
+            display: inline-block;
+            margin-right: 60px;
+        }
+
+    
+</style>
+</head>
+<body class="tui-bg-blue-black">
+
+
+    <div class="bordered white-168 tui-bg-blue-black center">
+
+        <div class="tui-window full-width tui-no-shadow left-align">
+            <fieldset class="tui-fieldset no-legend">
+                <ul>
+                    <li class='cb-header-item'><a class="inline logo"> #CAPTAIN_BRIDGE</a></li>
+
+                    <li class='cb-header-item'><a href='/#dashboards'
+                        onclick="CB.render_dashboards_table();"
+                        class="white-255-hover black-text-hover cursor-pointer inline">Dashboards</a></li>
+
+                    <li class='cb-header-item'><a href='/#metrics'
+                        onclick="CB.render_metrics_table();"
+                        class="white-255-hover black-text-hover cursor-pointer inline">Metrics</a></li>
+
+                    <li class='cb-header-item'><a
+                        onclick="CB.render_plannings_table();"
+                        class="white-255-hover black-text-hover cursor-pointer inline">Planning</a></li>
+
+                    <li class='cb-dropdown cb-header-item'>
+                        <a class="white-255-hover black-text-hover cursor-pointer inline">Data sources &#9776;</a>
+                        <div class="cb-dropdown-content">
+                            <a href='/#jiras' onclick="CB.render_jiras_table();">JIRA</a>
+                            <a href="#">GITLAB</a>
+                            <a href="#">TELEGRAM</a>
+                        </div>
+                    </li>
+
+                    <li class='cb-header-item'><a
+                        class="white-255-hover black-text-hover cursor-pointer inline" href='/'>README</a></li>
+
+                </ul>
+            </fieldset>
+        </div>
+
+
+        <div id='cb-readme' class='content container cb-innerblock'
+            style="display: block"
+            >
+
+            <div class="row">
+                <div class="col s12 m12 l12 white-text center">
+                    <h3>Documentation</h3>
+                    <hr>
+                    Рады вас видеть на капитанском мостике снова.
+                    Давайте расскажем как тут всё устроено.
+                    <img id='cb-helloworld-spok' src='/front/images/readme.png'></img>
+
+                </div>
+            </div>
+            <div
+                class="cb-content"
+                >
+
+
+                <h1 class='cb-h1'>
+                    Содержание
+                <br>==========
+                </h1>
+                <ul class='cb-hiera'>
+                    <li> <a href='#cb-docs-sources'>Источники данных</a></li>
+                    <ol>
+                       <li><a href='#cb-docs-jira'>JIRA</a></li>
+                    <ol>
+                           <li><a href='#cb-docs-jira-create'>Настройка</a></li>
+                           <li><a href='#cb-docs-jira-index'>Индексация данных</a></li>
+                           <li><a href='#cb-docs-issues-public'>datasource_jira_issues_public</a></li>
+                           <li><a href='#cb-docs-sprints-public'>datasource_jira_sprints_public</a></li>
+
+                    </ol>
+                    <li>GITLAB</li>
+                    <li>Discord</li>
+                    </ol>
+
+                    <li><a href='#cb-docs-metrics'>Метрики</a></li>
+                    <li><a href='#cb-docs-dashboards'>Дашборды</a></li>
+
+                </ul>
+
+                <br>
+                <h1 class='cb-h1' id='cb-docs-sources'>
+                    Источники данных
+                <br>================
+
+                </h1>
+                <div id='cb-docs-jira'>
+                    <h1 class='cb-h2'>
+                    # JIRA
+                <br>
+                    </h1>
+                    Данный вид источника позволяет создавать метрики на основе данных <a href='https://www.atlassian.com/software/jira'>Attlassian Jira</a>.
+
+                </div>
+
+                <br>
+
+                <div id='cb-docs-jira-create'>
+                    <h1 class='cb-h3'>
+                    ## Настройка
+                <br>
+
+                    </h1>
+                    Создание и редактирование источника происходит в разделе <span class='cb-terms'>Data sources / JIRA</span>.
+                    Сохранённые источники начинают автоматически индексироваться после создания и становятся доступны
+                    для использования в любой метрике.
+                    <img class='cb-width-100' src='/front/images/readme/jira-create-1.png'>
+                    <img class='cb-width-100' src='/front/images/readme/jira-create-3.png'>
+
+                    <br>
+                    При создании источника нужно указать логин и пароль, используемый для авторизации в Jira,
+                    а также список проектов, которые будут доступны в метриках.
+
+                    <br>
+                    Поле Index period определяет частоту, с которой будет запускаться индексирование источника.
+
+                    <img class='cb-width-100' src='/front/images/readme/jira-create-2.png'>
+
+                </div>
+                <div id='cb-docs-jira-index'>
+                    <h1 class='cb-h3'>
+                    ## Индексация
+                <br>
+
+                    </h1>
+                    Индексация - это автоматический периодический процесс преобразования сырых данных источника в канонические данные
+                    в формате коллекции базы MongoDB,
+                    к которым можно обращаться в метрике.
+                    <br>
+
+                    Периодическая индексация начинает происходить автоматически после сохранения источника.
+                    Также можно запустить
+                    индексацию принудительно, нажав на кнопки <span class='cb-terms'>Indexify JIRA</span>
+                    (индексировать только последние изменения в источнике) или
+                    <span class='cb-terms'> Indexify JIRA [last 3 month]</span> (индексировать все изменения за последние 3 месяца).
+
+                    <img class='cb-width-100' src='/front/images/readme/jira-create-4.png'>
+
+<br>
+<h1 class='cb-h3'>## Индексированные источники данных</h1>
+<h1 id="cb-docs-issues-public">datasource_jira_issues_public</h1>
+
+<pre class='cb-code'>
+{
+  "title": "Issue",
+  "type": "object",
+  "$defs": {
+    "Change": {
+      "properties": {
+        "issue": {
+          "title": "Issue",
+          "type": "string"
+        },
+        "author": {
+          "$ref": "#/$defs/User"
+        },
+        "created": {
+          "format": "date-time",
+          "title": "Created",
+          "type": "string"
+        },
+        "value_from": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value From"
+        },
+        "value_from_string": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value From String"
+        },
+        "value_to": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value To"
+        },
+        "value_to_string": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value To String"
+        },
+        "field": {
+          "title": "Field",
+          "type": "string"
+        }
+      },
+      "required": [
+        "issue",
+        "author",
+        "created",
+        "field"
+      ],
+      "title": "Change",
+      "type": "object"
+    },
+    "Component": {
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ],
+      "title": "Component",
+      "type": "object"
+    },
+    "Employee": {
+      "properties": {
+        "internal_id": {
+          "title": "Internal Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "roles": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/Role"
+          },
+          "title": "Roles",
+          "type": "array"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "title": "Employee",
+      "type": "object"
+    },
+    "IndexLog": {
+      "properties": {
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "level": {
+          "title": "Level",
+          "type": "string"
+        },
+        "message": {
+          "title": "Message",
+          "type": "string"
+        }
+      },
+      "required": [
+        "created_at",
+        "level",
+        "message"
+      ],
+      "title": "IndexLog",
+      "type": "object"
+    },
+    "IssueLink": {
+      "properties": {
+        "type": {
+          "title": "Type",
+          "type": "string"
+        },
+        "issue": {
+          "title": "Issue",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "issue"
+      ],
+      "title": "IssueLink",
+      "type": "object"
+    },
+    "IssueType": {
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "title": "Description",
+          "type": "string"
+        },
+        "subtask": {
+          "title": "Subtask",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "name",
+        "description",
+        "subtask"
+      ],
+      "title": "IssueType",
+      "type": "object"
+    },
+    "Jira": {
+      "properties": {
+        "internal_id": {
+          "title": "Internal Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "url": {
+          "title": "Url",
+          "type": "string"
+        },
+        "login": {
+          "default": "",
+          "title": "Login",
+          "type": "string"
+        },
+        "password": {
+          "default": "",
+          "title": "Password",
+          "type": "string"
+        },
+        "indexed_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Indexed At"
+        },
+        "index_period": {
+          "default": 300,
+          "title": "Index Period",
+          "type": "integer"
+        },
+        "logs": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/IndexLog"
+          },
+          "title": "Logs",
+          "type": "array"
+        },
+        "status": {
+          "default": "provisioning",
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "url"
+      ],
+      "title": "Jira",
+      "type": "object"
+    },
+    "Role": {
+      "properties": {
+        "internal_id": {
+          "title": "Internal Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "title": "Role",
+      "type": "object"
+    },
+    "Status": {
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "description": {
+          "title": "Description",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "description"
+      ],
+      "title": "Status",
+      "type": "object"
+    },
+    "User": {
+      "properties": {
+        "internal_id": {
+          "title": "Internal Id",
+          "type": "string"
+        },
+        "jira": {
+          "$ref": "#/$defs/Jira"
+        },
+        "employee": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Employee"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "key": {
+          "title": "Key",
+          "type": "string"
+        },
+        "display_name": {
+          "title": "Display Name",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "email": {
+          "title": "Email",
+          "type": "string"
+        },
+        "active": {
+          "title": "Active",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "jira",
+        "employee",
+        "key",
+        "display_name",
+        "name",
+        "email",
+        "active"
+      ],
+      "title": "User",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "internal_id": {
+      "title": "Internal Id",
+      "type": "string"
+    },
+    "jira": {
+      "$ref": "#/$defs/Jira"
+    },
+    "key": {
+      "title": "Key",
+      "type": "string"
+    },
+    "created": {
+      "format": "date-time",
+      "title": "Created",
+      "type": "string"
+    },
+    "updated": {
+      "format": "date-time",
+      "title": "Updated",
+      "type": "string"
+    },
+    "project": {
+      "title": "Project",
+      "type": "string"
+    },
+    "status": {
+      "$ref": "#/$defs/Status"
+    },
+    "issue_type": {
+      "$ref": "#/$defs/IssueType"
+    },
+    "assignee": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/User"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "creator": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/User"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "reporter": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/User"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "components": {
+      "items": {
+        "$ref": "#/$defs/Component"
+      },
+      "title": "Components",
+      "type": "array"
+    },
+    "links": {
+      "items": {
+        "$ref": "#/$defs/IssueLink"
+      },
+      "title": "Links",
+      "type": "array"
+    },
+    "subtasks": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Subtasks",
+      "type": "array"
+    },
+    "summary": {
+      "title": "Summary",
+      "type": "string"
+    },
+    "description": {
+      "title": "Description",
+      "type": "string"
+    },
+    "changes": {
+      "items": {
+        "$ref": "#/$defs/Change"
+      },
+      "title": "Changes",
+      "type": "array"
+    },
+    "storypoints": {
+      "default": 0.0,
+      "title": "Storypoints",
+      "type": "number"
+    }
+  },
+  "required": [
+    "jira",
+    "key",
+    "created",
+    "updated",
+    "project",
+    "status",
+    "issue_type",
+    "assignee",
+    "creator",
+    "reporter",
+    "components",
+    "links",
+    "subtasks",
+    "summary",
+    "description",
+    "changes"
+  ]
+}
+</pre>
+
+<h1 id="cb-docs-sprints-public">datasource_jira_sprints_public</h1>
+
+<pre class='cb-code'>
+{
+  "title": "Sprint",
+  "type": "object",
+  "$defs": {
+    "IndexLog": {
+      "properties": {
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "level": {
+          "title": "Level",
+          "type": "string"
+        },
+        "message": {
+          "title": "Message",
+          "type": "string"
+        }
+      },
+      "required": [
+        "created_at",
+        "level",
+        "message"
+      ],
+      "title": "IndexLog",
+      "type": "object"
+    },
+    "Jira": {
+      "properties": {
+        "internal_id": {
+          "title": "Internal Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "url": {
+          "title": "Url",
+          "type": "string"
+        },
+        "login": {
+          "default": "",
+          "title": "Login",
+          "type": "string"
+        },
+        "password": {
+          "default": "",
+          "title": "Password",
+          "type": "string"
+        },
+        "indexed_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Indexed At"
+        },
+        "index_period": {
+          "default": 300,
+          "title": "Index Period",
+          "type": "integer"
+        },
+        "logs": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/IndexLog"
+          },
+          "title": "Logs",
+          "type": "array"
+        },
+        "status": {
+          "default": "provisioning",
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "url"
+      ],
+      "title": "Jira",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "internal_id": {
+      "title": "Internal Id",
+      "type": "string"
+    },
+    "jira": {
+      "$ref": "#/$defs/Jira"
+    },
+    "project": {
+      "title": "Project",
+      "type": "string"
+    },
+    "sprint_id": {
+      "title": "Sprint Id",
+      "type": "integer"
+    },
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "start_date": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Start Date"
+    },
+    "end_date": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "End Date"
+    },
+    "complete_date": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Complete Date"
+    },
+    "activated_date": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Activated Date"
+    },
+    "goal": {
+      "default": "",
+      "title": "Goal",
+      "type": "string"
+    },
+    "board_names": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Board Names",
+      "type": "array"
+    },
+    "board_ids": {
+      "items": {
+        "type": "integer"
+      },
+      "title": "Board Ids",
+      "type": "array"
+    },
+    "issues": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Issues",
+      "type": "array"
+    }
+  },
+  "required": [
+    "jira",
+    "project",
+    "sprint_id",
+    "name",
+    "start_date",
+    "end_date",
+    "complete_date",
+    "activated_date",
+    "board_names",
+    "board_ids",
+    "issues"
+  ]
+}
+</pre>
+
+
+                </div>
+
+                <div id='cb-docs-metrics'>
+                    <h1 class='cb-h1'>
+                        Метрики
+                    <br>=======</h1>
+
+                    </h1>
+                    Метрика - это заданный пользователем алгоритм (правила) обработки индексированных данных источников
+                    для дальнейшего отображения на дашбордах.
+
+
+                    Создание и редактирование метрик происходит в разделе <span class='cb-terms'>Metrics</span>.
+
+                    <img class='cb-width-100' src='/front/images/readme/metrics-create-1.png'>
+
+                    Для метрики необходимо указать имя, настроить стадии обработки данных, которых может быть любое количество, но обязательно нужно задать
+                    терминальную стадию. Терминальная стадия - это та, результат работы которой выводится на дашборде.
+                    <img class='cb-width-100' src='/front/images/readme/metrics-create-2.png'>
+
+
+<br>
+
+
+
+
+                    
+                    Каждая стадия принимает на вход массив данных из индексированного источника (db) или другой стадии (stage). Откуда стадия получает данные указывается в поле
+                    <span class='cb-terms'>Inputs / Input type</span>. Далее стадия проводит их преобразование и отдаёт на выходе
+                    новый массив данных, который переходит в обработку в другой стадии или указывается как терминальный. 
+                    
+                    Каким способом стадия обрабатывает данные указывается в поле <span class='cb-terms'>Action type</span>. Это поле может принимать следующие значения
+                    <ul class='cb-hiera'>
+            <li>query
+            <br>Стадия применяет ко входящим данным запрос, описываемый <a class='cb-classic-a' href='https://www.mongodb.com/docs/manual/core/aggregation-pipeline/#aggregation-pipeline'>синтаксисом</a> MongoDB.
+                        <br>                         <br> 
+            </li>
+            <li>rpc
+            <br> Стадия выполняет HTTP запрос, передавая в него входящие данные и используя ответ в качестве результата работы стадии.
+
+<br>Описание протокола работы внешнего метода:
+<pre class='cb-code'>
+    
+openapi: 3.0.0
+info:
+  title: FastAPI
+  version: 0.1.0
+paths:
+  /your-plugin-path:
+    post:
+      summary: Summary
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Body'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+components:
+  schemas:
+    Body:
+      properties:
+        inputs:
+          type: object
+          title: Inputs
+        variables:
+          type: object
+          title: Variables
+        datetime_from:
+          type: string
+          format: date-time
+          title: Datetime From
+        datetime_to:
+          type: string
+          format: date-time
+          title: Datetime To
+      type: object
+      required:
+        - inputs
+        - variables
+        - datetime_from
+        - datetime_to
+      title: Body
+
+</pre>
+            </li>
+            </ul>
+                    
+                </div>
+
+
+                <div id='cb-docs-dashboards'>
+                    <h1 class='cb-h1'>
+                        Дашборды
+                    <br>========</h1>
+
+                    </h1>
+                    
+                    Дашборд - это визуально представление результата работы метрик в избранном пользователем виде.
+                    Каждый вид представления требует определённого формата результата работы метрики. С ними можно
+                    ознакомиться в описании каждого вида. 
+                    <br><br><span id='cb-dashboard-datatypes'>Виды представлений</span>:
+                    <ul class='cb-hiera'>
+            <li>table
+            <br>Результаты представлены в виде простой таблицы.<br>
+            Требования к метрике отсутствуют, любую метрику можно представить в виде таблицы.
+            <br><br>
+            </li>
+
+            <li>timeseries
+            <br>Представление числовых результатов на временной шкале.
+            <br>Требования к метрике: метрика возвращает массив документов с обязательными полями label и value.  
+            <br>Пример валидного результата работы метрики:
+            <pre class='cb-code'>[
+    {
+        "label": "Line 1",
+        "value": 10
+    },
+    {
+        "label": "Line 2",
+        "value": 1
+    }
+]</pre>
+
+            <br>
+            </li>
+            <li>gantt
+            <br>Результаты представлены в виде диаграммы Гантта.
+            <br>Требования к метрике:
+            <br>
+            <ol><li>Метрика возвращает массив документов с обязательными полями name и data.</li>
+            <li>Поле name должно содержать текстовое описание задачи.</li>
+            <li>Поле data должно содержать массив объектов с обязательными полями x и y.</li>
+            
+            <li>Поле y должно содержать
+            диапазон дат в виде списка вида ["2024-08-19 07:07:26","2024-08-22 07:37:42"].</li>
+            
+            <li>Поле x должно содержать имя исполнителя.</li>
+            </ol>
+            <br>Пример валидного результата работы метрики:
+            <pre class='cb-code'>[
+    {
+        "name": "TASK-1",
+        "data": [
+            {
+                "y": "Ivan Petrov",
+                "x": [
+                    "2024-08-26 11:21:02",
+                    "2024-08-26 12:19:01"
+                ]
+            },
+            {
+                "y": "Lazar Primus",
+                "x": [
+                    "2024-08-26 13:52:10",
+                    "2024-08-26 13:52:21"
+                ]
+            }
+        ]
+    }
+]</pre>
+  
+            <br>
+            </li>
+            </ul>
+
+        </div>
+
+            </div></div>
+
+
+
+        <div class="tui-window" id="cb-mainblock" style="text-align: left;">
+            <fieldset class="tui-fieldset cb-innerblock" id='cb-dashboards-table'>
+                <legend class="center">Dashboards</legend>
+                <span class="tui-fieldset-button left"><span class="green-255-text">■</span></span>    
+                <span class="tui-fieldset-text" style="margin-left: 50px;">&nbsp;1:1&nbsp;</span>    
+
+                <button class="tui-button white-255-text"
+                    onclick='CB.render_dashboard_form()'
+                    >Create</button>    
+
+                <table class="tui-table hovered-cyan width-100">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </fieldset>
+
+            <fieldset class="tui-fieldset cb-innerblock" id='cb-plannings-table'>
+                <legend class="center">Plannings</legend>
+                <span class="tui-fieldset-button left"><span class="green-255-text">■</span></span>    
+                <span class="tui-fieldset-text" style="margin-left: 50px;">&nbsp;1:1&nbsp;</span>    
+
+                <button class="tui-button white-255-text" onclick="CB.render_planning_form();">Create</button>    
+
+                <table class="tui-table hovered-cyan width-100">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+
+            </fieldset>
+
+            <fieldset class="tui-fieldset cb-innerblock" id='cb-jiras-table'>
+                <legend class="center">Jira sources</legend>
+                <span class="tui-fieldset-button left"><span class="green-255-text">■</span></span>    
+                <span class="tui-fieldset-text" style="margin-left: 50px;">&nbsp;1:1&nbsp;</span>    
+
+                <button class="tui-button white-255-text" onclick="CB.render_jira_form();">Create</button>    
+
+                <table class="tui-table hovered-cyan width-100">
+                    <thead>
+                        <tr>
+                            <th>Indexing status</th>
+                            <th>Internal ID</th>
+                            <th>Name</th>
+                            <th>URL</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+
+            </fieldset>
+
+            <fieldset class="tui-fieldset cb-innerblock" id='cb-metrics-table'>
+                <legend class="center">Metrics</legend>
+                <span class="tui-fieldset-button left"><span class="green-255-text">■</span></span>    
+                <span class="tui-fieldset-text" style="margin-left: 50px;">&nbsp;1:1&nbsp;</span>    
+
+                <button class="tui-button white-255-text" onclick="CB.render_metric_form();">Create</button>    
+
+                <table class="tui-table hovered-cyan width-100 cb-metrics-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+
+            </fieldset>
+
+            <fieldset class="tui-fieldset cb-innerblock" id='cb-jira-form'>
+                <legend class="center"></legend>
+                <span class="tui-fieldset-button left"><span class="green-255-text">■</span></span>    
+
+                <button class="tui-button white-255-text" onclick="CB.save_jira()">Save</button>    
+                <button class="tui-button red-168 cb-exit-button white-text" onclick="CB.render_jiras_table();">Exit</button> 
+
+                <div class="red-168 full-width white-text" id='cb-jira-form-errors'>
+                </div>
+
+                <br>
+                Internal ID..............: <input class='cb-internal-id-input disabled tui-input' disabled class="tui-input" value="" /><br>
+                Name.....................: <input class='cb-name-input tui-input' value="" /><br>
+                URL......................: <input class='cb-url-input tui-input' value="" /><br>
+                Authentication method....: <select class='cb-auth-method-input tui-input'
+                    onchange='CB.onchange_jira_auth_method(this);'>
+
+                    <option value='basic'>Login + Password</option>
+                    <option value='token'>Personal Access Token</option>
+                </select>
+				<br/>
+
+				<div class='cb-auth-method-basic-section'>
+                Login....................: <input class='cb-login-input tui-input' value="" /><br>
+                Password.................: <input type='password' class='cb-password-input tui-input' value="" /><br>
+				</div>
+				<div class='cb-auth-method-token-section'>
+                Personal token...........: <input type='password' class='cb-token-input tui-input' value="" /><br>
+				</div>
+                <span class='cb-textarea-label'>Projects.................:</span>&nbsp<textarea class='cb-projects-input tui-input' value="" ></textarea><br>
+
+                <h1>Custom fields</h1>
+                <button class="tui-button"
+                    onclick="CB.add_jira_custom_fields_onclick(this)"
+                    >+ Add mapping</button>    
+
+                <table class="tui-table hovered-cyan width-100" id='cb-jira-custom-fields'>
+                    <thead>
+                        <tr>
+                            <td>Source field</td>
+                            <td>Target field</td>
+                            <td>Type</td>
+                            <td></td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                <div id="cb-empty-custom-fields-list">No mapping yet</div>
+
+                
+                <h1>Indexing</h1>
+                Status............: <input class='cb-index-status-input disabled tui-input' value="" /><br>
+                Index period......: <input type='number' class='cb-index-period-input tui-input' value="" /><br>
+
+                Indexed at........: <input class='cb-indexed-at-input disabled tui-input' value="" /><br>
+
+                <button class="tui-button"
+                    onclick="CB.refresh_jira_logs_onclick(this)"
+                    >&#10148; Refresh logs</button>    
+
+                <button class="tui-button"
+                    onclick="CB.indexify_jira_onclick(this)"
+                    >&#9923; Indexify JIRA</button>    
+
+                <button class="tui-button orange-168 white-text"
+                    onclick="CB.indexify_jira_onclick(this, true)"
+                    >&#9923; Indexify JIRA [last 3 month] </button>    
+
+                <div id='cb-jira-indexify-progress-bar'
+                    class="tui-progress-bar inline-block valign-middle">
+                    <span class="tui-indeterminate"></span>
+                </div>
+
+                <div id='cb-jira-indexify-log'> 
+
+                </div>
+ 
+            </fieldset>
+
+            <fieldset class="tui-fieldset cb-innerblock" id='cb-planning-form'>
+                <legend class="center"></legend>
+                <span class="tui-fieldset-button left"><span class="green-255-text">■</span></span>    
+
+                <button class="tui-button white-255-text" onclick="CB.save_planning()">Save</button>    
+                <button class="tui-button red-168 white-255-text" onclick="CB.delete_planning_onclick()">[X]Delete</button>    
+                <button class="tui-button red-168 cb-exit-button white-text" onclick="CB.render_plannings_table();">Exit</button> 
+
+                <div class="red-168 full-width white-text" id='cb-planning-form-errors'>
+                </div>
+
+                <br>
+                <input class='cb-internal-id-input tui-input' style='display: none; height: 0;' value="" />
+                Name..................: <input class='cb-name-input tui-input' value="" /><br>
+                <span class='cb-select2-inputs'>
+                    Velocity metric.......: <select onchange='CB.PLANNING.onchange_metric(this);' class="tui-input cb-metric-input" >
+                </select>
+                </span>
+                    <br>
+                Velocity period.......: <select onchange='CB.PLANNING.onchange_period(this);' class="tui-input cb-period-input" >
+                    <option value='30d'>1 month</option>
+                    <option value='60d'>2 months</option>
+                    <option value='90d'>3 months</option>
+                </select><br>
+                Issue size field......: <input
+					class='tui-input cb-issue-size-field-input'
+					onchange="CB.PLANNING.onchange_issue_size(this);"
+					value="" /><br>
+                Default issue size....: <input
+					class='tui-input cb-default-issue-size-input'
+					type='number' min='0' value="1"
+					onchange="CB.PLANNING.onchange_default_issue_size(this);"
+					/><br>
+                <span class='cb-float-left'>Terminal states.......:
+                </span>&nbsp;<textarea
+					onchange="CB.PLANNING.onchange_terminal_states(this);"
+					class='tui-input cb-terminal-states-input' value="" ></textarea><br>
+
+            <div class='tui-panel cb-stage-tabs' id='cb-planning-charts' style='width: 100%;'>
+            <div class="tui-tabs cb-tabs-header">    
+                <ul>
+                    <li><a class='tui-tab active'
+                        data-tab-content='cb-planning-assigned-issues-tab'>
+                        Assigned issues
+                    </a></li>
+
+                    <li><a class='tui-tab'
+                        data-tab-content='cb-planning-timeline-tab'>
+                        Gantt
+                    </a></li>
+
+                    <li><a class='tui-tab'
+                        data-tab-content='cb-planning-velocities-tab'>
+                        Velocities
+                    </a></li>
+
+					<li><a class='tui-tab'
+                        data-tab-content='cb-planning-day-offs-tab'>
+                        Day-Offs
+                    </a></li>
+
+                </ul>    
+            </div>    
+            <div class="content" id="cb-planning-tabs-content">    
+
+            <div class='tui-tab-content' id='cb-planning-velocities-tab'>
+                <table class="" id='cb-velocities-chart'>
+                    <thead>
+                        <tr>
+                            <th>Employee</th>
+                            <th>Velocity (per day)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+				<span class='cb-no-velocity-metric'>No employees...</span>
+            </div>
+
+            <div class='tui-tab-content' id='cb-planning-timeline-tab'>
+                <button class='tui-button' id='cb-extend-timeline-left' onclick="CB.extend_timeline_left();">+2 weeks</button>
+                <button class='tui-button' id='cb-extend-timeline-right' onclick="CB.extend_timeline_right();">+2 weeks</button>
+                <table class="" id='cb-timeline-chart'>
+                    <thead>
+                        <tr>
+                            <th></th>
+                        </tr>
+                        <tr>
+                            <th>Employee</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+				<span class='cb-no-velocity-metric'>No employees...</span>
+            </div>
+
+            <div class='tui-tab-content' id='cb-planning-day-offs-tab'>
+                <table class="" id='cb-day-offs-chart'>
+                    <thead>
+                        <tr>
+                            <th>Employee</th>
+                            <th>From</th>
+                            <th>To</th>
+                            <th></th>
+                        </tr>
+                        <tr>
+                            <th>
+                            	<select id='cb-planning-employee-select-for-day-off'>
+									<option value=''>All</option>
+                            	</select>
+                            </th>
+                            <th><input id='cb-planning-date-from-for-day-off' type='date'></th>
+                            <th><input id='cb-planning-date-to-for-day-off' type='date'></th>
+                            <th>
+								<button class='tui-button' onclick='CB.PLANNING.commit_day_off_form();'>Add</button>
+                            </th>
+                        </tr>
+
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+	
+				<span class='cb-no-velocity-metric'>No employees...</span>
+            </div>
+
+
+            <div class='tui-tab-content' id='cb-planning-assigned-issues-tab'>
+                <div id='cb-assigned-issues-chart'>
+                </div>
+				<span class='cb-no-velocity-metric'>No employees...</span>
+            </div>
+            </div>
+            </div>
+            </fieldset>
+
+            <fieldset class="tui-fieldset cb-innerblock" id='cb-metric-form'>
+                <legend class="center"></legend>
+                <span class="tui-fieldset-button left"><span class="green-255-text">■</span></span>    
+
+                <button class="tui-button white-255-text" onclick="CB.save_metric()">Save</button>    
+                <button class="tui-button white-255-text" onclick="CB.clone_metric()">Clone</button>    
+                <button class="tui-button red-168 white-255-text" onclick="CB.delete_metric_onclick()">[X]Delete</button>    
+                <button class="tui-button red-168 cb-exit-button white-text" onclick="CB.render_metrics_table();">Exit</button> 
+
+                <div class="red-168 full-width white-text" id='cb-metric-form-errors'>
+                </div>
+
+                <br>
+                Internal ID.......: <input class='cb-internal-id-input disabled tui-input' disabled class="tui-input" value="" /><br>
+                Name..............: <input class='cb-name-input tui-input' value="" /><br>
+
+                <!--
+                Metric type.......: <select class="tui-input cb-metric-type-input" >
+                <option>timeseries</option>
+                <option>table</option>
+                <option>gantt</option>
+                </select><br>
+                -->
+
+                <div class="cb-stages-list">
+                <h3>Pipeline</h3>
+
+                    Terminal stage....: <select class='cb-terminal-stage-input tui-input' value="">
+                    </select><br>
+
+                    <button class="tui-button"
+                        onclick="CB.add_new_metric_stage_onclick()"
+                        >[+]Add stage</button>    
+                    <br>
+            <div class="tui-panel cb-stage-tabs" style="width: 100%;">    
+            <div class="tui-tabs cb-tabs-header">    
+                <ul>    
+                </ul>    
+            </div>    
+            <div class="content cb-stage-tabs-content">    
+            </div>    
+        </div>
+                </div>
+
+            </fieldset>
+
+            <fieldset class="tui-fieldset cb-innerblock" id='cb-dashboard-form'>
+                <legend class="center"></legend>
+                <span class="tui-fieldset-button left"><span class="green-255-text">■</span></span>    
+
+                <button class="tui-button white-255-text" onclick="CB.save_dashboard()">Save</button>    
+
+                <button class="tui-button red-168 white-255-text" onclick="CB.delete_dashboard_onclick()">[X]Delete</button>    
+                <button class="tui-button red-168 cb-exit-button white-text" onclick="CB.render_dashboards_table();">Exit</button> 
+
+                <div class="red-168 full-width white-text" id='cb-dashboard-form-errors'>
+                </div>
+
+                <br>
+                <input class='cb-internal-id-input disabled cb-invisible' class="tui-input" value="" /><br>
+                Name..............: <input class='cb-name-input'class="tui-input" value="" /><br>
+                <h1>Variables <button class="" onclick="CB.add_dashboard_variable_onclick();">+</button></h1>
+                <div id='cb-variables'>
+                    <div class='cb-variable'>
+                        <input disabled class='tui-input' value='datetime_from'> =
+                        <input class="cb-datetime cb-datetime-from cb-datetime-week-ago" type="datetime-local" />
+                        <br/>
+                    </div>
+
+                    <div class='cb-variable'>
+                        <input disabled class='tui-input' value='datetime_to'> =
+                        <input class="cb-datetime cb-datetime-to cb-datetime-now" type="datetime-local" />
+                        <br/>
+                    </div>
+
+                    <div class='cb-variable'>
+                        <input disabled class='tui-input' value='step'> =
+                        <input class="cb-period" type="text" value="7d"/>
+                        <br/>
+                    </div>
+                </div>
+
+                <br/>
+
+                <button class="tui-button white-255-text" onclick="CB.refresh_dashboard()">Refresh</button>    
+                <button class="tui-button"
+                    onclick="CB.add_new_metric_to_dashboard()"
+                    >[+]Add metric</button>    
+
+                <div class='cb-metrics-presentation-container'></div>
+            </fieldset>
+
+        </div><br>
+
+    </div>
+
+        <div class="tui-statusbar blue-255 white-255-text left-align">
+            <ul>
+                <li><a id='cb-current-date'></a></li>
+                <li><a id='cb-current-time'></a></li>
+            </ul>
+        </div>
+
+    </div>
+
+        <div class="cb-popup tui-panel white-168 black-255-text"
+            id='cb-dashboard-variable-options'>
+            <div class="tui-panel-header">    
+                   Changing options of variable
+            </div>    
+            <div class="tui-panel-content">    
+                <span class='cb-popup-text'>
+                <h1>Values separated by new line</h1>
+                <textarea class='cb-value tui-input'></textarea>
+                </span>
+                <input type='number' class='cb-line-num cb-invisible' />
+                <br><br>    
+                <div class="center">    
+                    <button class="tui-button" style="width: 80px"
+                        onclick='CB.save_variable_options();'>♥  Save</button>    
+
+                    <button class="tui-button" style="width: 80px"
+                        onclick='CB.close_popup(this);'>[X] Cancel</button>    
+                </div>    
+            </div>    
+        </div>    
+
+
+        <div class="tui-panel white-168 black-255-text" id='cb-popup'>    
+            <div class="tui-panel-header">    
+                   INFO
+            </div>    
+            <div class="tui-panel-content">    
+                <span class='cb-popup-text'></span>
+                <br><br>    
+                <div class="center">    
+                    <button class="tui-button white-255" style="width: 80px"
+                        onclick='CB.close_popup();'>♥  Close</button>    
+                </div>    
+            </div>    
+        </div>    
+
+        <div class="tui-panel white-168 black-255-text cb-popup" id='cb-delete-dashboard-popup'>    
+            <div class="tui-panel-header">    
+                   Danger
+            </div>    
+            <div class="tui-panel-content">    
+                <span class='cb-popup-text'>
+                    <div class='cb-bones-sign'>&#9760;</div>
+                    Are you sure you want to delete this dashboard?
+                </span>
+                <br><br>    
+                <div class="center">    
+                    <button class="tui-button red-168" style="width: 80px"
+                        onclick='CB.delete_dashboard();'>Yes</button>    
+
+                    <button class="tui-button green-168" style="width: 80px"
+                        onclick='CB.close_popup(this);'>No</button>    
+                </div>    
+            </div>    
+        </div>    
+
+
+        <div class="tui-panel white-168 black-255-text cb-popup" id='cb-delete-planning-popup'>    
+            <div class="tui-panel-header">    
+                   Danger
+            </div>    
+            <div class="tui-panel-content">    
+                <span class='cb-popup-text'>
+                    <div class='cb-bones-sign'>&#9760;</div>
+                    Are you sure you want to delete this planning?
+                </span>
+                <br><br>    
+                <div class="center">    
+                    <button class="tui-button red-168" style="width: 80px"
+                        onclick='CB.delete_planning();'>Yes</button>    
+
+                    <button class="tui-button green-168" style="width: 80px"
+                        onclick='CB.close_popup(this);'>No</button>    
+                </div>    
+            </div>    
+        </div>    
+
+
+
+        <div class="tui-panel white-168 black-255-text cb-popup" id='cb-delete-metric-popup'>    
+            <div class="tui-panel-header">    
+                   Danger
+            </div>    
+            <div class="tui-panel-content">    
+                <span class='cb-popup-text'>
+                    <div class='cb-bones-sign'>&#9760;</div>
+                    Are you sure you want to delete this metric?
+                </span>
+                <br><br>    
+                <div class="center">    
+                    <button class="tui-button red-168" style="width: 80px"
+                        onclick='CB.delete_metric();'>Yes</button>    
+
+                    <button class="tui-button green-168" style="width: 80px"
+                        onclick='CB.close_popup(this);'>No</button>    
+                </div>    
+            </div>    
+        </div>    
+
+        <div class="tui-panel white-168 black-255-text cb-popup" id='cb-add-new-metric-popup'>    
+            <div class="tui-panel-header">    
+                   INFO
+            </div>    
+            <div class="tui-panel-content">    
+                <span class='cb-popup-text'>
+                   <table class="tui-table hovered-cyan width-100 cb-metrics-table">
+                       <thead>
+                           <tr>
+                               <th>Name</th>
+                           </tr>
+                       </thead>
+                       <tbody>
+                       </tbody>
+                   </table>
+                </span>
+                <br><br>    
+                <div class="center">    
+                    <button class="tui-button white-255" style="width: 80px"
+                        onclick='CB.close_popup(this);'>[X] Close</button>    
+                </div>    
+            </div>    
+        </div>    
+
+
+
+        <div class="tui-panel white-168 black-255-text" id='cb-server-request-progress-bar'>    
+            <div class="tui-panel-header">    
+            </div>    
+            <div class="tui-panel-content">    
+                   <div class="tui-progress-bar inline-block valign-middle">
+                    <span class="tui-indeterminate"></span>
+                </div><br><br>
+            </div>    
+        </div>    
+</div> 
+</body>
+</html>
