@@ -1,6 +1,9 @@
 import aiohttp
 import motor.motor_asyncio
 
+from service import migrations
+
+
 _DB = None
 
 
@@ -37,6 +40,7 @@ async def init(db_dsn, db_name, ca_file=None, ca_file_url=None):
 
     client = motor.motor_asyncio.AsyncIOMotorClient(db_dsn, **options)
     _DB = getattr(client, db_name)
+    await migrations.apply_all(_DB)
 
 
 async def cleanup(): ...
