@@ -10,7 +10,13 @@ logger = logging.getLogger(__name__)
 async def main(settings):
     logging.config.dictConfig(settings.LOGGING)
     logger.info("Indexing jiras: started.")
-    await db.init(settings.DB_DSN, settings.DB_NAME, settings.DB_CAFILE)
+    await db.init(
+        settings.DB_DSN,
+        settings.DB_NAME,
+        settings.DB_CAFILE,
+        settings.DB_CAFILE_URL,
+    )
+
     container = await containers.create(settings)
 
     while True:
