@@ -17,6 +17,10 @@ case "$1" in
 		exec python service/periodics/index_jira.py
 		;;
 
+	"migrate")
+		exec python service/migrate.py
+		;;
+
 	"actualize_plannings")
 		exec python service/periodics/actualize_plannings.py
 		;;

@@ -7,8 +7,9 @@ from service.repositories import plannings as planning_repositories
 from service.services.dry_run_service import DryRunService
 from service.services.jira_index_service import JiraIndexService
 from service.services.jira_service import JiraService
-from service.services.planning_actualizer_service import \
-    PlanningActualizerService
+from service.services.planning_actualizer_service import (
+    PlanningActualizerService,
+)
 from service.services.run_service import RunService
 
 

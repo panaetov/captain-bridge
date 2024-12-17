@@ -6,8 +6,15 @@ import time
 import dateutil.parser
 
 from service import utils
-from service.entities.jira import (Comment, IndexLog, Issue, Jira, Sprint,
-                                   Status, User)
+from service.entities.jira import (
+    Comment,
+    IndexLog,
+    Issue,
+    Jira,
+    Sprint,
+    Status,
+    User,
+)
 
 logger = logging.getLogger(__name__)
 

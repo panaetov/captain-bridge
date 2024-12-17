@@ -2967,7 +2967,7 @@ $(function() {
                 }
             }
             this.render_all_issues();
-            this.adjust_height();
+            this.render_history();
             this.show_or_hide_empty_warnings();
         },
 
@@ -3390,7 +3390,27 @@ $(function() {
                 $select.val(null).trigger('change');
 
                 var tr = $select.parents('.cb-employee-row');
-                employee = $(tr).attr('cb-employee');
+                var employee_in_charge = $(tr).attr('cb-employee');
+
+                var i;
+                var already_assigned = false;
+                for(i=0; i<self.employees.length; ++i) {
+                    var employee = self.employees[i].name;
+                    var assigned_issues = self.issues[employee] || [];
+                    var j;
+                    for(j=0; j<assigned_issues.length; ++j) {
+                        var assigned_issue = assigned_issues[j];
+
+                        if (assigned_issue.internal_id == issue.internal_id) {
+                            CB.show_popup('Invalid action', `Issue is already assigned to ${employee}`);
+                            already_assigned = true;
+                        }
+                    }
+                }
+
+                if (already_assigned) {
+                    return;
+                }
 
                 $.ajax({
                     url: URLS.planning.get_done_percent,
@@ -3403,7 +3423,7 @@ $(function() {
 
                     error: CB.process_http_error,
                     success: function(result) {
-                        self.assign_issue(issue, employee, result.done_percent, result.overdue);
+                        self.assign_issue(issue, employee_in_charge, result.done_percent, result.overdue);
                     }
                 });
 

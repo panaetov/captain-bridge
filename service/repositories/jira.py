@@ -1,8 +1,14 @@
 import logging
 from typing import List
 
-from service.entities.jira import (Issue, Jira, JiraIndexingSchedule, Project,
-                                   Sprint, User)
+from service.entities.jira import (
+    Issue,
+    Jira,
+    JiraIndexingSchedule,
+    Project,
+    Sprint,
+    User,
+)
 from service.repositories.common import Repository
 
 logger = logging.getLogger(__name__)

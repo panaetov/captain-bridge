@@ -4,8 +4,14 @@ import logging
 from typing import Annotated, Dict, List
 
 import pydantic
-from fastapi import (APIRouter, Depends, HTTPException, Request, Response,
-                     WebSocket)
+from fastapi import (
+    APIRouter,
+    Depends,
+    HTTPException,
+    Request,
+    Response,
+    WebSocket,
+)
 from pytimeparse import parse as parse_interval
 
 from service import utils
@@ -14,10 +20,12 @@ from service.entities.metric import Dashboard, Metric, Stage
 from service.entities.planning import DonePercent, Planning
 from service.repositories import jira as jira_repositories
 from service.repositories.metrics import DashboardRepository, MetricRepository
-from service.repositories.plannings import (DayOffRepository,
-                                            DonePercentRepository,
-                                            HistoryRepository,
-                                            PlanningRepository)
+from service.repositories.plannings import (
+    DayOffRepository,
+    DonePercentRepository,
+    HistoryRepository,
+    PlanningRepository,
+)
 from service.services.dry_run_service import DryRunService
 from service.services.jira_index_service import JiraIndexService
 from service.services.run_service import RunService
