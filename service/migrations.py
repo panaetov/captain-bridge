@@ -66,6 +66,18 @@ async def apply_1(db):
             "datasource_jira_issues",
             ("created", pymongo.ASCENDING),
         ),
+        Index(
+            "datasource_jira_issues",
+            ("created", pymongo.ASCENDING),
+        ),
+
+        Index(
+            "datasource_jira_issues",
+            ("jira_internal_id", pymongo.ASCENDING),
+            ("key", pymongo.ASCENDING),
+            unique=True,
+        ),
+
         # JIRA.ISSUES.PUBLIC
         Index(
             "datasource_jira_issues_public",
@@ -88,6 +100,13 @@ async def apply_1(db):
             "datasource_jira_issues_public",
             ("created", pymongo.ASCENDING),
         ),
+        Index(
+            "datasource_jira_issues_public",
+            ("jira_internal_id", pymongo.ASCENDING),
+            ("key", pymongo.ASCENDING),
+            unique=True,
+        ),
+
         # JIRA.LOGS
         Index(
             "datasource_jira_logs",
