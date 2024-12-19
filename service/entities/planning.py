@@ -52,3 +52,4 @@ class History(pydantic.BaseModel):
     date: datetime.datetime
     employee: str
     issue_internal_id: str
+    issue_key: str = ''

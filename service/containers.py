@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import urllib.parse
 
 from service import db
 from service.repositories import jira as jira_repositories
@@ -99,10 +100,11 @@ async def create(settings):
         ),
     )
 
+    worker_url = urllib.parse.urljoin(settings.BASIC_URL, '/metric/pipeline/run')
     run_service = RunService(
         db=db.get_db(),
         metrics_repository=metric_repositories_container.metrics,
-        worker_url=settings.WORKER_URL,
+        worker_url=worker_url,
     )
 
     planning_actualizer = PlanningActualizerService(

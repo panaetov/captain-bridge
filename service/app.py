@@ -10,6 +10,8 @@ from service.presentation.handlers import router
 logging.config.dictConfig(settings.LOGGING)
 app = FastAPI()
 
+from fastapi.staticfiles import StaticFiles
+app.mount("/front", StaticFiles(directory="front"), name="front")
 
 origins = [
     "*",
@@ -36,6 +38,7 @@ async def startup():
 
     container = await containers.create(settings)
     app.container = container
+    app.settings = settings
     http_plugins.init()
 
 

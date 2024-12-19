@@ -12,6 +12,7 @@ from fastapi import (
     Response,
     WebSocket,
 )
+from fastapi.templating import Jinja2Templates
 from pytimeparse import parse as parse_interval
 
 from service import utils
@@ -36,9 +37,30 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
+def _get_base_url(request: Request):
+    return request.app.settings.BASIC_URL
+
+
+def _get_ws_base_url(request: Request):
+    return request.app.settings.WS_BASIC_URL
+
+
 @router.get("/")
-def test_connection_handler():
-    return "Surprise, motherfucker."
+async def index_handler(
+        request: Request,
+        base_url=Depends(_get_base_url),
+        base_ws_url=Depends(_get_ws_base_url),
+):
+    templates = Jinja2Templates(directory="front")
+    context = {
+        "backend_host": '',
+        "ws_backend_host": '',
+    }
+    return templates.TemplateResponse(
+        request=request,
+        name="index.html",
+        context=context,
+    )
 
 
 def _get_dashboard_repository(request: Request):
@@ -71,7 +93,7 @@ async def get_dashboards_handler(
         name = d.name
 
         if root:
-            name = name[len(f"{root}") :]
+            name = name[len(f"{root}"):]
 
         path = name.split("/")
         if len(path) == 1 or not path[0] or not path[-1]:
@@ -214,7 +236,7 @@ async def get_metrics_handler(
         name = d.name
 
         if root:
-            name = name[len(f"{root}") :]
+            name = name[len(f"{root}"):]
 
         path = name.split("/")
         if len(path) == 1 or not path[0] or not path[-1]:
