@@ -11,13 +11,9 @@ DB_CAFILE = os.environ.get("SERVICE_DB_CAFILE", "")
 DB_CAFILE_URL = os.environ.get("SERVICE_DB_CAFILE_URL", "")
 
 BASIC_URL = os.environ.get("SERVICE_BASIC_URL", "")
-WS_BASIC_URL = os.environ.get("SERVICE_WS_BASIC_URL", "/")
 
 if not BASIC_URL:
     raise RuntimeError("SERVICE_BASIC_URL environment variable is empty.")
-
-if not WS_BASIC_URL:
-    raise RuntimeError("SERVICE_WS_BASIC_URL environment variable is empty.")
 
 LOGGING = {
     "version": 1,

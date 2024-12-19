@@ -37,28 +37,18 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-def _get_base_url(request: Request):
-    return request.app.settings.BASIC_URL
-
-
-def _get_ws_base_url(request: Request):
-    return request.app.settings.WS_BASIC_URL
-
-
 @router.get("/")
 async def index_handler(
         request: Request,
-        base_url=Depends(_get_base_url),
-        base_ws_url=Depends(_get_ws_base_url),
 ):
     templates = Jinja2Templates(directory="front")
     context = {
         "backend_host": '',
         "ws_backend_host": '',
+        "request": request,
     }
     return templates.TemplateResponse(
-        request=request,
-        name="index.html",
+        "index.html",
         context=context,
     )
 
