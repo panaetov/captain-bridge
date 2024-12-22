@@ -16,3 +16,8 @@ jobs:
       run: echo VERSION = ${{ github.event.inputs.tag }} 
     - name: Login dockerhub
       run: docker login -u cryptolynx --password ${{ secrets.DOCKERHUB_TOKEN }}
+    - name: Retag
+      run: |
+        docker pull cryptolynx/captain-bridge:${{ github.event.inputs.tag }} &&
+        docker tag cryptolynx/captain-bridge:${{ github.event.inputs.tag }} cryptolynx/captain-bridge:latest &&
+        docker push cryptolynx/captain-bridge:latest
