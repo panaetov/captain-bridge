@@ -32,8 +32,8 @@ body {
 }
 
 #cb-helloworld-spok {
-    # width: 30% !important;
-    # float: right;
+    width: 50% !important;
+    float: left;
     margin: 1em auto;
 }
 
@@ -862,4 +862,27 @@ td.cb-employee {
 
 .cb-text-align-center {
 	text-align: center;
+}
+
+.cb-guide-link {
+	text-decoration: underline;
+	font-weight: bold;
+	color: #ffff00;
+}
+
+.cb-readme-text {
+	float: right;
+	width: 50%;
+	text-align: left;
+	padding: 0 1em;
+}
+
+#cb-readme {
+	color: white;
+	font-size: 1.2em;
+}
+
+#cb-readme .row {
+	border: 4px double #ffffff;
+    background: #0000a8;
 }
