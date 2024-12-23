@@ -2120,7 +2120,7 @@ $(function() {
     CB.empty_jira_form = function() {
         $("#cb-jira-form .cb-internal-id-input").val('');
         $("#cb-jira-form .cb-name-input").val('');
-        $("#cb-jira-form .cb-url-input").val('https://prodlike.poisk.mts.ru/cbproxy/');
+        $("#cb-jira-form .cb-url-input").val('');
         $("#cb-jira-form .cb-login-input").val('');
         $("#cb-jira-form .cb-password-input").val('');
         $("#cb-jira-form .cb-indexed-at-input").val('');
