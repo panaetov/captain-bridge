@@ -4270,10 +4270,46 @@ $(function() {
         return result;
     }
 
+	CB.parse_interval = str => {
+		let seconds = 0;
+		let days = str.match(/(\d+)\s*d$/);
+		let hours = str.match(/(\d+)\s*h$/);
+		let minutes = str.match(/(\d+)\s*m$/);
+		if (days) { seconds += parseInt(days[1])*86400; }
+		if (hours) { seconds += parseInt(hours[1])*3600; }
+		if (minutes) { seconds += parseInt(minutes[1])*60; }
+		return seconds;
+	};
+
     CB.refresh_metric = function(internal_id) {
         var $datetime_from = $("#cb-dashboard-form .cb-datetime-from");
         var $datetime_to = $("#cb-dashboard-form .cb-datetime-to");
         var $period = $("#cb-dashboard-form .cb-period");
+
+		if (!$datetime_from.val()) {
+        	CB.show_popup(
+        		"Invalid parameters",
+        		"Parameter <span class='cb-bold'>datetime_from</span> is not correct. Please check it."
+        	);
+        	return;
+		}
+
+		if (!$datetime_to.val()) {
+        	CB.show_popup(
+        		"Invalid parameters",
+        		"Parameter <span class='cb-bold'>datetime_to</span> is not correct. Please check it."
+        	);
+        	return;
+		}
+
+		if (!CB.parse_interval($period.val())) {
+        	CB.show_popup(
+        		"Invalid parameters",
+        		"Value of <span class='cb-bold'>step</span> is not a valid interval. Please check it."
+        	);
+        	return;
+		}
+
 
         var $slot = $(".cb-metrics-presentation-container");
         var data_type = $slot.find(
