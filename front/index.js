@@ -2169,11 +2169,6 @@ $(function() {
             return false;
         }
 
-        if (!payload.index_period) {
-            CB.add_form_error($errors, "Index period is empty.");
-            return false;
-        }
-
         var i;
         for(i=0; i<payload.custom_fields.length; ++i) {
             var row = payload.custom_fields[i];
@@ -2226,8 +2221,7 @@ $(function() {
             login: $form.find(".cb-login-input").val().trim(),
             password: $form.find(".cb-password-input").val().trim(),
             projects: projects,
-            custom_fields: custom_fields,
-            index_period: $form.find(".cb-index-period-input").val()
+            custom_fields: custom_fields
         }
 
         var is_valid = CB.validate_jira_form(payload);
