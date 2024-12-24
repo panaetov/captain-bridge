@@ -114,7 +114,8 @@ $(function() {
 
     CB.process_http_error = function(jq, status, error) {
         var text = JSON.stringify(jq.responseJSON);
-        CB.show_popup("Request failed", `${error}<p>${text}`);
+        console.log(`Server error: json=${text}, error=${error}`);
+        CB.show_popup("Request failed", "Server error");
     }
 
     CB.init_timezone_selects = function () {
@@ -359,7 +360,13 @@ $(function() {
 
         $("#cb-jira-indexify-progress-bar").css("visibility", "visible");
 
-        let socket = new WebSocket(URLS.jiras.indexify);
+        var ws_proto = 'wss';
+        if (location.protocol == 'http:') {
+			ws_proto = 'ws';
+        }
+
+        var ws_url = `${ws_proto}://${location.host}${URLS.jiras.indexify}`
+        let socket = new WebSocket(ws_url);
 
         socket.onopen = function(e) {
             socket.send(internal_id + "_" + (full? 'full': 'delta'));
@@ -381,7 +388,7 @@ $(function() {
                 var error = 'Соединение прервано. Ошибка на сервере.';
                 CB.show_popup("Request failed", error);
             }
-            CB.render_jira_form(internal_id);
+            CB.render_jira_form(internal_id, false);
         };
 
         socket.onerror = function(error) {
@@ -2324,13 +2331,15 @@ $(function() {
         }
     }
 
-    CB.render_jira_form = function(internal_id) {
+    CB.render_jira_form = function(internal_id, empty_before_update) {
         location.hash = `jira:${internal_id || ''}`;
 
         var $form = $("#cb-jira-form");
         var $legend = $("#cb-jira-form > legend");
 
-        CB.empty_jira_form();
+		if (empty_before_update) {
+        	CB.empty_jira_form();
+        }
 
         var _finish_form = function() {
             CB.hide_all_innerblocks();
