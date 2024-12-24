@@ -388,7 +388,7 @@ $(function() {
                 var error = 'Соединение прервано. Ошибка на сервере.';
                 CB.show_popup("Request failed", error);
             }
-            CB.render_jira_form(internal_id, false);
+            CB.render_jira_form(internal_id, true);
         };
 
         socket.onerror = function(error) {
@@ -2325,13 +2325,13 @@ $(function() {
         }
     }
 
-    CB.render_jira_form = function(internal_id, empty_before_update) {
+    CB.render_jira_form = function(internal_id, preserve_before_update) {
         location.hash = `jira:${internal_id || ''}`;
 
         var $form = $("#cb-jira-form");
         var $legend = $("#cb-jira-form > legend");
 
-		if (empty_before_update) {
+		if (!preserve_before_update) {
         	CB.empty_jira_form();
         }
 
@@ -2379,6 +2379,7 @@ $(function() {
                         $log_container.html("No logs yet...");
                     }
                     var custom_fields = jira.custom_fields || [];
+        			$("#cb-jira-custom-fields tbody").html('');
                     for(i=0; i<custom_fields.length; ++i) {
                         var custom_field = jira.custom_fields[i];
                         CB.add_jira_custom_fields(
