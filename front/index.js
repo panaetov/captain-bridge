@@ -362,7 +362,7 @@ $(function() {
 
         var ws_proto = 'wss';
         if (location.protocol == 'http:') {
-			ws_proto = 'ws';
+            ws_proto = 'ws';
         }
 
         var ws_url = `${ws_proto}://${location.host}${URLS.jiras.indexify}`
@@ -2140,6 +2140,18 @@ $(function() {
         $("#cb-jira-custom-fields tbody").html('');
     }
 
+    CB.is_valid_url = function(string) {
+        let url;
+
+        try {
+          url = new URL(string);
+        } catch (_) {
+          return false;
+        }
+
+        return url.protocol === "http:" || url.protocol === "https:";
+    }
+
     CB.validate_jira_form = function(payload) {
         var $errors = $("#cb-jira-form-errors");
         $errors.empty();
@@ -2151,6 +2163,11 @@ $(function() {
 
         if (!payload.url) {
             CB.add_form_error($errors, "URL is empty.");
+            return false;
+        }
+
+        if (!CB.is_valid_url(payload.url)) {
+            CB.add_form_error($errors, "URL is not a valid URL.");
             return false;
         }
 
@@ -2331,8 +2348,8 @@ $(function() {
         var $form = $("#cb-jira-form");
         var $legend = $("#cb-jira-form > legend");
 
-		if (!preserve_before_update) {
-        	CB.empty_jira_form();
+        if (!preserve_before_update) {
+            CB.empty_jira_form();
         }
 
         var _finish_form = function() {
@@ -2379,7 +2396,7 @@ $(function() {
                         $log_container.html("No logs yet...");
                     }
                     var custom_fields = jira.custom_fields || [];
-        			$("#cb-jira-custom-fields tbody").html('');
+                    $("#cb-jira-custom-fields tbody").html('');
                     for(i=0; i<custom_fields.length; ++i) {
                         var custom_field = jira.custom_fields[i];
                         CB.add_jira_custom_fields(
@@ -2979,7 +2996,7 @@ $(function() {
             var val = $(input).val();
 
             var internal_id = $(input).parents(".cb-assigned-issues-item").find(".cb-issue-internal_id").html();
-			this.done_percents[internal_id] = {
+            this.done_percents[internal_id] = {
                 value: val,
                 changed_at: CB.utcnow() 
             };
@@ -3281,7 +3298,7 @@ $(function() {
                 for(j=0; j<tds.length; ++j) {
                     var day = this.days[j];
                     if (day.is_today) {
-                		break;
+                        break;
                     }
                     var td = tds[j + 1];
                     if ($(td).html() && prev_td && $(td).html() == $(prev_td).html()) {
@@ -4265,45 +4282,45 @@ $(function() {
         return result;
     }
 
-	CB.parse_interval = str => {
-		let seconds = 0;
-		let days = str.match(/(\d+)\s*d$/);
-		let hours = str.match(/(\d+)\s*h$/);
-		let minutes = str.match(/(\d+)\s*m$/);
-		if (days) { seconds += parseInt(days[1])*86400; }
-		if (hours) { seconds += parseInt(hours[1])*3600; }
-		if (minutes) { seconds += parseInt(minutes[1])*60; }
-		return seconds;
-	};
+    CB.parse_interval = str => {
+        let seconds = 0;
+        let days = str.match(/(\d+)\s*d$/);
+        let hours = str.match(/(\d+)\s*h$/);
+        let minutes = str.match(/(\d+)\s*m$/);
+        if (days) { seconds += parseInt(days[1])*86400; }
+        if (hours) { seconds += parseInt(hours[1])*3600; }
+        if (minutes) { seconds += parseInt(minutes[1])*60; }
+        return seconds;
+    };
 
     CB.refresh_metric = function(internal_id) {
         var $datetime_from = $("#cb-dashboard-form .cb-datetime-from");
         var $datetime_to = $("#cb-dashboard-form .cb-datetime-to");
         var $period = $("#cb-dashboard-form .cb-period");
 
-		if (!$datetime_from.val()) {
-        	CB.show_popup(
-        		"Invalid parameters",
-        		"Parameter <span class='cb-bold'>datetime_from</span> is not correct. Please check it."
-        	);
-        	return;
-		}
+        if (!$datetime_from.val()) {
+            CB.show_popup(
+                "Invalid parameters",
+                "Parameter <span class='cb-bold'>datetime_from</span> is not correct. Please check it."
+            );
+            return;
+        }
 
-		if (!$datetime_to.val()) {
-        	CB.show_popup(
-        		"Invalid parameters",
-        		"Parameter <span class='cb-bold'>datetime_to</span> is not correct. Please check it."
-        	);
-        	return;
-		}
+        if (!$datetime_to.val()) {
+            CB.show_popup(
+                "Invalid parameters",
+                "Parameter <span class='cb-bold'>datetime_to</span> is not correct. Please check it."
+            );
+            return;
+        }
 
-		if (!CB.parse_interval($period.val())) {
-        	CB.show_popup(
-        		"Invalid parameters",
-        		"Value of <span class='cb-bold'>step</span> is not a valid interval. Please check it."
-        	);
-        	return;
-		}
+        if (!CB.parse_interval($period.val())) {
+            CB.show_popup(
+                "Invalid parameters",
+                "Value of <span class='cb-bold'>step</span> is not a valid interval. Please check it."
+            );
+            return;
+        }
 
 
         var $slot = $(".cb-metrics-presentation-container");
