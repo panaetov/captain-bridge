@@ -3856,15 +3856,22 @@ $(function() {
 
                 } 
             } else {
+                if (CB._METRICS_ROOT) {
+                    $form.find(".cb-name-input").val(CB._METRICS_ROOT);
+                }
                 CB.add_metric_pipeline_stage();
             }
             _finish_form();
         }
     }
 
+    CB._METRICS_ROOT = '';
+    CB._DASHBOARDS_ROOT = '';
+
     CB.render_metrics_table = function(root) {
         location.hash = "metrics";
 
+        CB._METRICS_ROOT = root;
         CB.hide_all_innerblocks();
         var $panel = $("#cb-metrics-table");
         var $tbody = $panel.find('tbody')
@@ -4423,6 +4430,7 @@ $(function() {
 
         } else {
             $legend.html("Creating a new dashboard");
+            $form.find(".cb-name-input").val(CB._DASHBOARDS_ROOT);
             _finish_form();
         }
 
@@ -4431,6 +4439,7 @@ $(function() {
     CB.render_dashboards_table = function(root) {
         location.hash = "dashboards";
 
+        CB._DASHBOARDS_ROOT = root;
         CB.hide_all_innerblocks();
         var $panel = $("#cb-dashboards-table");
         var $tbody = $panel.find('tbody')

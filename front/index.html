@@ -396,7 +396,7 @@
                 <button class="tui-button white-255-text" onclick="CB.save_metric()">Save</button>    
                 <button class="tui-button white-255-text" onclick="CB.clone_metric()">Clone</button>    
                 <button class="tui-button red-168 white-255-text" onclick="CB.delete_metric_onclick()">[X]Delete</button>    
-                <button class="tui-button red-168 cb-exit-button white-text" onclick="CB.render_metrics_table();">Exit</button> 
+                <button class="tui-button red-168 cb-exit-button white-text" onclick="CB.render_metrics_table(CB._METRICS_ROOT);">Exit</button> 
 
                 <div class="red-168 full-width white-text" id='cb-metric-form-errors'>
                 </div>
@@ -442,7 +442,7 @@
                 <button class="tui-button white-255-text" onclick="CB.save_dashboard()">Save</button>    
 
                 <button class="tui-button red-168 white-255-text" onclick="CB.delete_dashboard_onclick()">[X]Delete</button>    
-                <button class="tui-button red-168 cb-exit-button white-text" onclick="CB.render_dashboards_table();">Exit</button> 
+                <button class="tui-button red-168 cb-exit-button white-text" onclick="CB.render_dashboards_table(CB._DASHBOARDS_ROOT);">Exit</button> 
 
                 <div class="red-168 full-width white-text" id='cb-dashboard-form-errors'>
                 </div>
