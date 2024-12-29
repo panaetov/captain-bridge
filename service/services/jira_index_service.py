@@ -120,6 +120,14 @@ class Worker:
 
     async def _indexify(self):
         self.logger.info("Start...")
+        now = datetime.datetime.utcnow()
+        await self._update_jiras(
+            {
+                "indexed_at": now,
+                "status": "indexing",
+            }
+        )
+
         if self.jira_internal_id:
             projects = await self.launcher.projects_repository.fetch_by_jira(
                 self.jira_internal_id,
@@ -139,7 +147,6 @@ class Worker:
         self.logger.info("Refreshing issues public view.")
         await self.launcher.issues_repository.refresh_presentation_view()
 
-        now = datetime.datetime.utcnow()
         await self._update_jiras(
             {
                 "indexed_at": now,

@@ -136,14 +136,14 @@ $(function() {
 
     CB.render_jira_status = function(status) {
         status = status.toUpperCase();
-        if (status == 'PROVISIONING') {
-            return "<img class='cb-status-icon' src='/front/images/doom-unknown.png'>"
+        if (status == 'INDEXING') {
+            return "<img class='cb-status-icon' src='/front/images/doom-unknown.png'><br><span class='cb-index-status'>IN PROGRESS<span>"
             return '&#129300;';
         } else if (status == 'ERROR') {
-            return "<img class='cb-status-icon' src='/front/images/doom-bad.png'>"
+            return "<img class='cb-status-icon' src='/front/images/doom-bad.png'><br><span class='cb-index-status'>ERROR</span>"
             return '&#128565;';
         } else if (status == 'INDEXED') {
-            return "<img class='cb-status-icon' src='/front/images/doom-smile.png'>"
+            return "<img class='cb-status-icon' src='/front/images/doom-smile.png'><br><span class='cb-index-status'>INDEXED</span>"
             return '&#128512;';
         }
 
@@ -2053,7 +2053,7 @@ $(function() {
 
     CB.get_jira_status_class = function(status) {
         status = status.toUpperCase();
-        if (status == 'PROVISIONING') {
+        if (status == 'INDEXING') {
             return 'cb-status-provisioning';
         } else if (status == 'ERROR') {
             return 'cb-status-error';

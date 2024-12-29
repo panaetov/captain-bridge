@@ -114,12 +114,7 @@ async def apply_1(db):
         ),
         Index(
             "datasource_jira_logs",
-            ("updated", pymongo.ASCENDING),
-            ttl_secs=600,
-        ),
-        Index(
-            "datasource_jira_logs",
-            ("created", pymongo.ASCENDING),
+            ("created_at", pymongo.ASCENDING),
             ttl_secs=600,
         ),
         # JIRA.PROJECTS

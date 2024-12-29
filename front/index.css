@@ -886,3 +886,7 @@ td.cb-employee {
 	border: 4px double #ffffff;
     background: #0000a8;
 }
+
+.cb-index-status {
+	font-size: 20px;
+}

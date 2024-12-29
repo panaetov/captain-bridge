@@ -27,7 +27,7 @@ class Jira(pydantic.BaseModel):
     indexed_at: datetime.datetime | None = None
     index_period: int = 300
     logs: List[IndexLog] = []
-    status: str = "provisioning"
+    status: str = "indexing"
     custom_fields: List[Dict] = []
 
 
