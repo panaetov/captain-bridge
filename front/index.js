@@ -2416,9 +2416,10 @@ $(function() {
             "<select class='tui-input cb-custom-field-type cb-100'>" +
             "<option>text</option>" +
             "<option>number</option>" +
-            "<option>datetime</option>" +
             "</select>"
         );
+        // TBD: return datetime option and support it in dashboards.
+        // "<option>datetime</option>" +
         type.val(type_value || 'text');
 
         var delete_button = $(
