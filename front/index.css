@@ -80,6 +80,7 @@ input, select, textarea, fieldset {
     max-height: 500px;
     border: 0;
     padding: 0;
+    display: block;
 }
 
 .cb-stage-logs {
@@ -113,6 +114,8 @@ input, select, textarea, fieldset {
     height: 600px;
     overflow: auto;
     background: none;
+    border: 1px solid;
+    color: white;
 }
 
 .cb-table-metric-presentation table {
@@ -147,7 +150,7 @@ input, select, textarea, fieldset {
 .cb-stage-tabs .tui-tab {
     min-width: 240px;
     border: 3px outset #eee;
-    background: #e8e8e8;
+    background: #e2e2e2;
     color: black;
 }
 
@@ -289,7 +292,7 @@ textarea:focus {
 .cb-chart-toggler {
     margin-right: 1em;
     color: black;
-    background: #e8e8e8;
+    background: #e2e2e2;
 }
 
 .cb-metric-error-on-dashboard {
@@ -586,17 +589,21 @@ body {
 }
 
 .cb-metric-warning-on-dashboard {
-    height: 100%;
-    background: #000;
-    color: #00a800;
-    width: 100%;
-    font-size: 1.5em;
+    # height: 100%;
+    # background: #000;
+    # color: #00a800;
+    # width: 100%;
+    # font-size: 1.5em;
+    color: white;
+    text-align: center;
+    font-size: 100px;
+    margin: 240px 0;
 }
 
 .cb-stage-results-tabs .tui-tab {
     min-width: 240px;
     border: 3px outset #eee;
-    background: #e8e8e8;
+    background: #e2e2e2;
     color: black;
 }
 
@@ -638,27 +645,27 @@ td {
 }
 
 #cb-timeline-chart {
-	width: 100%;
-	overflow-x: auto;
-	border: 0;
+    width: 100%;
+    overflow-x: auto;
+    border: 0;
 }
 
 #cb-timeline-chart td {
-	# border-bottom: 1px solid;
+    # border-bottom: 1px solid;
 
-	cursor: auto;
-	height: 6em;
-	min-width: 4em;
-	# max-height: 400px;
-	# overflow: auto;
+    cursor: auto;
+    height: 6em;
+    min-width: 4em;
+    # max-height: 400px;
+    # overflow: auto;
 }
 
 #cb-timeline-chart th {
-	border: 3px outset;
+    border: 3px outset;
 }
 
 .cb-task {
-	background: white;
+    background: white;
     color: black;
     border: 3px outset;
     height: 2em;
@@ -666,11 +673,11 @@ td {
 }
 
 .cb-task-in-progress {
-	background-color: orange;
+    background-color: orange;
 }
 
 .cb-task-done {
-	background-color: green;
+    background-color: green;
 }
 
 .cb-headcol {
@@ -688,115 +695,115 @@ td {
 }
 
 #cb-timeline-chart-container {
-	overflow-x: auto;
-	margin-left: 45em;
-	overflow-y: visible;
-	padding: 0;
+    overflow-x: auto;
+    margin-left: 45em;
+    overflow-y: visible;
+    padding: 0;
 }
 
 .cb-jira-issue-select {
-	width: 100%;
+    width: 100%;
 }
 
 .cb-assigned-issues-item {
-	margin-top: 1em;
+    margin-top: 1em;
 }
 
 .cb-assigned-issue-key {
-	font-weight: bold;
+    font-weight: bold;
 }
 
 .cb-assigned-issue-status {
 }
 
 .cb-assigned-issue-summary {
-	display: block;
+    display: block;
 }
 
 .cb-short {
-	min-width: 150px;
+    min-width: 150px;
 }
 
 #cb-assigned-issues-chart .cb-employee {
-	font-size: 1.2em;
-	margin-bottom: 1em;
+    font-size: 1.2em;
+    margin-bottom: 1em;
 
 }
 
 #cb-extend-timeline-left {
-	position: relative;
+    position: relative;
     left: 0;
     min-width: 1em;
 }
 
 #cb-extend-timeline-right {
-	position: absolute;
+    position: absolute;
     right: 2em;
     min-width: 1em;
 }
 
 .cb-week-day-7, .cb-week-day-6 {
-	background: #000;
-	color: white;
+    background: #000;
+    color: white;
 }
 
 .cb-today {
-	border-left: 20px red solid !important;
+    border-left: 20px red solid !important;
 }
 
 .cb-assigned-issues-list {
-	width: 100%;
-	max-width: 100%;
-	overflow: auto;
-	border-spacing: 0;
+    width: 100%;
+    max-width: 100%;
+    overflow: auto;
+    border-spacing: 0;
 }
 
 button.cb-up {
-	width: 100%;
+    width: 100%;
 }
 
 button.cb-down {
-	width: 100%;
+    width: 100%;
 }
 
 .cb-assigned-issues-item td {
 }
 
 .cb-issue {
-	border: 3px inset black !important;
-	background: #e2e2e2;
-	color: black;
-	# display: block;
-	# margin-top: 7em;
-	# height: 4em;
+    border: 3px inset black !important;
+    background: #e2e2e2;
+    color: black;
+    # display: block;
+    # margin-top: 7em;
+    # height: 4em;
 }
 
 .cb-done {
-	min-width: 4em;
-	width: 100%;
+    min-width: 4em;
+    width: 100%;
 }
 
 .cb-float-left {
-	float: left;
+    float: left;
 }
 
 .select2-container {
-	margin-bottom: 1em;
+    margin-bottom: 1em;
 }
 
 #cb-planning-form .cb-select2-inputs .select2-selection {
-	background: #000;
+    background: #000;
 }
 #cb-planning-form .cb-select2-inputs .select2-selection__rendered {
-	color: white;
+    color: white;
 }
 
 #cb-planning-form .cb-select2-inputs .select2-container {
-	width: 500px !important;
+    width: 500px !important;
 }
 
 .cb-velocity {
-	float: right;
+    float: right;
     position: relative;
     top: -2.4em;
     background: #fff;
@@ -806,87 +813,151 @@ button.cb-down {
 }
 
 .cb-assigned-issues-item.cb-finished {
-	text-decoration:  line-through;
+    text-decoration:  line-through;
 }
 
 #cb-planning-tabs-content {
-	color: black;
-	background: #e8e8e8;
-	overflow-x: auto;
+    color: black;
+    background: #e2e2e2;
+    overflow-x: auto;
 }
 
 #cb-planning-tabs-content td {
-	background: white;
-	border-bottom: 2px solid #e8e8e8;
-	border-left: 2px solid #e8e8e8;
+    background: white;
+    border-bottom: 2px solid #e2e2e2;
+    border-left: 2px solid #e2e2e2;
 }
 
 #cb-planning-tabs-content table {
-	border: 1px solid;
+    border: 1px solid;
 }
 
 .cb-employee-row {
-	margin-bottom: 2em;
+    margin-bottom: 2em;
 }
 
 table {
-	width: 100%;
+    width: 100%;
 }
 
 #cb-velocities-chart th {
-	border-bottom: 1px solid;
+    border-bottom: 1px solid;
 }
 
 button {
-	cursor: pointer;
+    cursor: pointer;
 }
 
 .cb-delete-button-td {
-	text-align: center;
-	width: 3em;
+    text-align: center;
+    width: 3em;
 }
 
 td.cb-employee {
-	background: #eee !important;
-	border: 3px outset #eee !important;
+    background: #eee !important;
+    border: 3px outset #eee !important;
 }
 
 .cb-past.cb-issue {
-	# border: 1px solid #999 !important;
+    # border: 1px solid #999 !important;
     # background: #f8f8f8 !important;
 }
 
 .cb-day-off {
-	background: #eee !important;
+    background: #eee !important;
 }
 
 .cb-text-align-center {
-	text-align: center;
+    text-align: center;
 }
 
 .cb-guide-link {
-	text-decoration: underline;
-	font-weight: bold;
-	color: #ffff00;
+    text-decoration: underline;
+    font-weight: bold;
+    color: #ffff00;
 }
 
 .cb-readme-text {
-	float: right;
-	width: 50%;
-	text-align: left;
-	padding: 0 1em;
+    float: right;
+    width: 50%;
+    text-align: left;
+    padding: 0 1em;
 }
 
 #cb-readme {
-	color: white;
-	font-size: 1em;
+    color: white;
+    font-size: 1em;
 }
 
 #cb-readme .row {
-	border: 4px double #ffffff;
+    border: 4px double #ffffff;
     background: #0000a8;
 }
 
 .cb-index-status {
-	font-size: 20px;
+    font-size: 20px;
+}
+
+.cb-variables-table td {
+    border: 1px solid;
+    //padding: 1em 0.5em;
+    background: #e2e2e2;
+    color: black;
+}
+
+.cb-variables-table td input, .cb-variables-table td select {
+    width: 100%;
+    background: black;
+    margin: 0;
+    color: white;
+}
+
+.cb-subtitle {
+    //border: 3px groove;
+    // text-align: center;
+    // margin: 1em auto 0;
+    // font-weight: bold;
+    // font-size: 1.2em;
+    // width: 10em;
+    // box-shadow: 10px 10px #000;
+}
+
+
+.cb-variables-table td.cb-delete-button-container {
+	width: 1em;
+}
+
+.cb-debug-title {
+	font-weight: bold;
+	font-size: 1.4em;
+	border-bottom: 1px solid;
+	margin: 1em 0;
+}
+
+
+.cb-stage-tabs {
+	box-shadow: none;
+}
+
+.cb-stage-results-tabs {
+	box-shadow: none;
+	background: #e2e2e2;
+	color: black;
+}
+
+.cb-black {
+	color: black;
+}
+
+
+.cb-variables-table th {
+	color: #ff0;
+}
+
+.cb-stage-results tbody {
+	color: black;
+}
+
+.cb-stage-results thead {
+	color: black;
 }

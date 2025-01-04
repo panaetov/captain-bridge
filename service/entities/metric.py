@@ -242,12 +242,17 @@ class Pipeline:
         return isinstance(obj, (list, tuple))
 
 
+class Variable(pydantic.BaseModel):
+    name: str
+    type: str
+
+
 class Metric(pydantic.BaseModel):
     internal_id: str = pydantic.Field(default_factory=generate_internal_id)
     name: str
 
     stages: List[Stage]
-    variables: Dict
+    variables: List[Variable]
 
     async def compute(self, datetime_from, datetime_to, scope, db):
         scope["datetime_from"] = datetime_from

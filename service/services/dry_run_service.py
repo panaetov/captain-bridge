@@ -25,7 +25,7 @@ class DryRunService:
         metric = Metric(
             name="dry-run-test",
             stages=computed_stages,
-            variables={},
+            variables=[],
         )
         result, logs = await metric.compute(
             datetime_from, datetime_to, scope, self.db

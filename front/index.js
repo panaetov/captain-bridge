@@ -112,6 +112,20 @@ $(function() {
 
     CB = {}
 
+    CB.regexExecAll = (str, regex) => {
+        var lastMatch;
+        var matches = [];
+
+        while ((lastMatch = regex.exec(str))) {
+            matches.push(lastMatch);
+
+            if (!regex.global) break;
+        }
+
+        return matches;
+    }; 
+
+
     CB.process_http_error = function(jq, status, error) {
         var text = JSON.stringify(jq.responseJSON);
         console.log(`Server error: json=${text}, error=${error}`);
@@ -488,7 +502,7 @@ $(function() {
                 "<span class='cb-float-left'>Pipeline............:&nbsp</span>"
             );
             $pipeline = $(
-                "<textarea class='tui-input cb-action-pipeline'></textarea>"
+                "<textarea class='tui-input cb-action-value cb-action-pipeline'></textarea>"
             );
             $pipeline.val(JSON.stringify(
                 stage.action.pipeline || [{
@@ -508,7 +522,7 @@ $(function() {
                 "<span>URL.................: </span>"
             );
             $url = $(
-                "<input class='cb-action-url tui-input' />"
+                "<input class='cb-action-url cb-action-value tui-input' />"
             );
             $url.val(stage.action.url || '');
             $details.append($url);
@@ -519,7 +533,7 @@ $(function() {
                 "<span class='cb-float-left'>Code................:&nbsp</span>"
             );
             $pipeline = $(
-                "<textarea class='tui-input cb-action-code'></textarea>"
+                "<textarea class='tui-input cb-action-value cb-action-code'></textarea>"
             );
             $pipeline.val(
                 stage.action.code
@@ -691,16 +705,67 @@ $(function() {
         return true;
     }
 
-    CB.add_metric_variable_onclick = function(button) {
-        var block = $(button).parents('.cb-stage').find('.cb-variables');
-        CB.add_metric_variable(block);
-        CB.sync_metric_variables(block);
+    CB.add_metric_variable_onclick = function() {
+        CB.add_metric_variable_spec();
+        CB.configure_metric_debug_variables();
+    }
+
+    CB.add_metric_variable_spec = function(name, type) {
+        var tbody = $("#cb-metric-variables-list .cb-variables-table tbody");
+
+        var qty = $(tbody).find('tr').length; 
+
+        name = name || `var_${qty - 1}`;
+        type = type || 'text';
+
+        var tr = $("<tr class='cb-metric-variable-row'></tr>");
+        tr.append(`<td><input type='text' onchange='CB.configure_metric_debug_variables()' value='${name}'></td>`)
+        tr.append(
+            `<td><select value='${type}' onchange='CB.configure_metric_debug_variables()'>` +
+            "<option>text</option>" +
+            "<option>number</option>" +
+            "<option>datetime</option>" +
+            "</select></td>"
+        );
+        tr.append("<td class='cb-delete-button-container'><button class='' onclick='CB.delete_metric_variable_onclick(this);'>X</td>")
+        tbody.append(tr);
+    }
+
+    CB.configure_metric_debug_variables = function() {
+        var trs = $("#cb-metric-variables-list .cb-variables-table tbody tr");
+        var blocks = $('.cb-variables');
+        var j;
+        for(j=0; j<blocks.length; ++j) {
+            var block = blocks[j];
+
+            var variables = $(block).find(".cb-variable");
+            var k;
+            for(k=2; k< variables.length; ++k) {
+                $(variables[k]).remove();
+            }
+        }
+
+        var i;
+        for(i=2; i<trs.length; ++i) {
+            var tr = trs[i];
+
+            var tds = $(tr).find('td');
+            var name = $(tds[0]).find('input').val();
+            var type = $(tds[1]).find('select').val();
+
+            var blocks = $('.cb-variables');
+            var j;
+            for(j=0; j<blocks.length; ++j) {
+                var block = blocks[j];
+                CB.add_metric_variable($(block), name, type);
+            }
+        }
     }
 
     CB.sync_metric_variables = function(active_block) {
         var $block = $(active_block);
 
-        var    all_blocks = $block.parents('.cb-stage-tabs-content').find('.cb-variables');
+        var all_blocks = $block.parents('.cb-stage-tabs-content').find('.cb-variables');
         var i;
         for(i=0; i<all_blocks.length; ++i) {
             $other_block = $(all_blocks[i]);
@@ -709,19 +774,34 @@ $(function() {
         }
     }
 
-    CB.add_metric_variable = function(containers) {
+    CB.add_metric_variable = function(containers, name, type) {
         var container = $("<div class='cb-variable'></div>");
         containers.append(container);
 
-        var name = $("<input class='tui-input cb-variable-name'>");
+        var name = $(`<input disabled class='tui-input cb-variable-name' value=${name}>`);
         container.append(name);
 
         container.append(' = ');
 
-        var select = $("<input class='tui-input cb-variable-value'></input>");
-        container.append(select);
+        if (type == 'datetime') {
+            var select = $(
+                "<input class='cb-datetime cb-datetime-from cb-datetime-now' " +
+                "type='datetime-local'></input>"
+            );
+            container.append(select);
 
-        container.append("<button onclick='CB.delete_metric_variable_option_onlick(this);'>X</button>");
+        } else if (type == 'number'){
+
+            var select = $(
+                "<input class='cb-variable-value' " +
+                "type='number'></input>"
+            );
+            container.append(select);
+
+        } else {
+            var select = $("<input class='cb-variable-value'></input>");
+            container.append(select);
+        }
         container.append("<br/>");
     }
 
@@ -729,19 +809,34 @@ $(function() {
         CB.add_dashboard_variable();
     }
 
-    CB.delete_metric_variable_option_onlick = function(button) {
-        var active_block = $(button).parents('.cb-variables');
-        $(button).parents('.cb-variable').remove();
-        CB.sync_metric_variables(active_block);
+    CB.delete_metric_variable_onclick = function(button) {
+        var tr = $(button).parents('.cb-metric-variable-row');
+        tr.remove();
+
+        CB.configure_metric_debug_variables();
     }
 
     CB.add_dashboard_variable = function(data) {
         data = data || {};
         var containers = $("#cb-variables");
+		var current_vars = containers.find('.cb-variable');
+		var i;
+		var exists = false;
+		for(i=0; i<current_vars.length; ++i) {
+			var current_name = $(current_vars[i]).find('.cb-variable-name').val();
+			if (current_name == data.name) {
+				exists = true;
+			}
+		}
+
+		if (exists) {
+			return;
+		}
+
         var container = $("<div class='cb-variable'></div>");
         containers.append(container);
 
-        var name = $("<input class='tui-input cb-variable-name'>");
+        var name = $("<input disabled class='tui-input cb-variable-name'>");
         container.append(name);
         name.val(data.name || '');
 
@@ -754,7 +849,6 @@ $(function() {
         container.append(textarea);
 
         container.append("<button onclick='CB.edit_dashboard_variable_option_onclick(this);'>&#9477;</button>");
-        container.append("<button onclick='CB.delete_dashboard_variable_option_onlick(this);'>X</button>");
         container.append("<br/>");
 
         if (data.options) {
@@ -911,6 +1005,7 @@ $(function() {
             stages.push(CB.parse_metric_stage($stage_form));
         }
 
+        var variables = CB.parse_metric_variables_specs();
         $.ajax({
             url: URLS.metrics.save,
             method: 'post',
@@ -921,8 +1016,8 @@ $(function() {
             data: JSON.stringify({
                 internal_id: $form.find(".cb-internal-id-input").val(),
                 name: $form.find(".cb-name-input").val(),
-                variables: {},
-                stages: stages 
+                variables: variables,
+                stages: stages
             }),
 
             success: function(result) {
@@ -953,7 +1048,7 @@ $(function() {
         $elem.empty();
         $elem.append(
             "<div class='full-width cb-metric-warning-on-dashboard'>" +
-            "<span class='cb-bold'>WARNING: </span><span>" + text + "</span><br/>" +
+            text +
             "</div>"
         );
     }
@@ -1029,7 +1124,7 @@ $(function() {
 
         var row = rows[0];
         if (!row) {
-            $table.html("<div class='cb-metric-warning-on-dashboard'>Result: no data</dib>");
+            $table.html("<div class='cb-metric-warning-on-dashboard'>No data :(</div>");
             return;
         }
         var i, keys = [];
@@ -1090,7 +1185,7 @@ $(function() {
         $elem.empty();
 
         if (!rows.length) {
-            CB.render_metric_warning(internal_id, "No points...");
+            CB.render_metric_warning(internal_id, "No data :(");
             return;
         }
 
@@ -1296,7 +1391,7 @@ $(function() {
         }
 
         if (!rows.length || !has_points) {
-            CB.render_metric_warning(internal_id, "No points...");
+            CB.render_metric_warning(internal_id, "No data :(");
             return;
         }
 
@@ -1474,6 +1569,8 @@ $(function() {
         $("#cb-metric-form-errors").empty();
         $("#cb-metric-form-errors").hide();
         $('#cb-metric-form .cb-terminal-stage-input').empty();
+        $('#cb-metric-variables-list .cb-variables-table .cb-metric-variable-row').remove();
+
         CB.empty_metric_pipelines();
     }
 
@@ -1595,6 +1692,25 @@ $(function() {
                 max: new Date(max_datetime).getTime()
             }
         }, false, false);
+    }
+
+    CB.parse_metric_variables_specs = function() {
+        var trs = $("#cb-metric-variables-list .cb-metric-variable-row");
+
+        var result = [];
+        var i;
+        for(i=0; i<trs.length; ++i) {
+            var tr = trs[i];
+            var tds = $(tr).find('td');
+            var name = $(tds[0]).find('input').val();
+            var type = $(tds[1]).find('select').val();
+            result.push({
+                name: name,
+                type: type,
+            })
+        }
+
+        return result;
     }
 
     CB.dry_run_on_click = function(button) {
@@ -1838,6 +1954,8 @@ $(function() {
     CB.add_new_metric_stage_onclick = function() {
         CB.add_metric_pipeline_stage();
         CB.actualize_stage_inputs();
+        var block = $(".cb-variables")[0];
+        CB.sync_metric_variables($(block));
     }
 
     CB.add_metric_pipeline_stage = function(stage) {
@@ -1967,10 +2085,9 @@ $(function() {
 
         var html = (
             "<button class=\"tui-button\" onclick=\"CB.dry_run_on_click(this);\">" +
-            "Show result" +
+            "Show result of this stage" +
             "</button> " +
             "<br>" +
-            "<h1>Variables <button onclick='CB.add_metric_variable_onclick(this);'>+</button></h1>" +
             "<div class='cb-variables'>" +
             "    <div class='cb-variable'>" +
             "        <input disabled class='tui-input' value='datetime_from'> = " + 
@@ -1993,7 +2110,7 @@ $(function() {
             "</div>" +
             "<div class='content'>" +
             `    <div id='cb-stage-results-result-${tabs_counter}' class='tui-tab-content'> ` +
-            "        <table class='tui-table hovered-cyan width-100 cb-stage-results'><tbody><tr><td>No results yet...</td></tr></tbody></table>" +
+            "        <table class='tui-table hovered-cyan width-100 cb-stage-results'><tbody><tr><td class='cb-black'>No results yet...</td></tr></tbody></table>" +
             "    </div>" +
             `    <div id='cb-stage-results-logs-${tabs_counter}' class='tui-tab-content width-100 cb-stage-logs'>` +
             "No logs yet...</div>" +
@@ -3837,6 +3954,12 @@ $(function() {
                         );
 
                     } 
+
+                    for(i=0; i<metric.variables.length; ++i) {
+                        var variable = metric.variables[i];
+                        CB.add_metric_variable_spec(variable.name, variable.type);
+                    }
+                    CB.configure_metric_debug_variables();
                     _finish_form();
                 },
                 error: CB.process_http_error
@@ -4040,7 +4163,7 @@ $(function() {
         // popup.find(".cb-popup-text").html(html);
 
         popup.show();
-    }
+    }	
 
     CB.add_metric_to_dashboard = function(internal_id, prepend, metric_type) {
         metric_type = metric_type || 'table';
@@ -4058,7 +4181,6 @@ $(function() {
             "class=\"tui-input cb-metric-type\">" +    
             "<option>table</option>" +
             "<option>timeseries</option>" +
-            "<option>gantt</option>" +
             "</select>" +
             "<a href='/#cb-dashboard-datatypes' class='cb-question-mark' target='_blank'>&quest;<a>" +
             "<br>" +
@@ -4098,6 +4220,13 @@ $(function() {
                 );
                 legend.html(legend_html);
 
+
+				var i;
+				for(i=0; i<metric.variables.length; ++i) {
+					var variable = metric.variables[i];
+
+					CB.add_dashboard_variable(variable);
+				}
                 CB.refresh_metric(internal_id);
             },
             error: CB.process_http_error
@@ -4366,8 +4495,6 @@ $(function() {
                     CB.render_metric_timeseries_chart(internal_id, data);
                 } else if (data_type == 'table') {
                     CB.render_metric_table(internal_id, data);
-                } else if (data_type == 'gantt') {
-                    CB.render_metric_gantt_chart(internal_id, data);
                 }
             },
             error: function(jq, status, error) {

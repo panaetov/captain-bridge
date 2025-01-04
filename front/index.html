@@ -413,15 +413,54 @@
                 </select><br>
                 -->
 
+
                 <div class="cb-stages-list">
-                <h3>Pipeline</h3>
+                <!--<h1>Pipeline</h1>-->
 
                     Terminal stage....: <select class='cb-terminal-stage-input tui-input' value="">
                     </select><br>
 
+                <div id="cb-metric-variables-list">
+                <h1 class='cb-subtitle'>Variables</h1>
+
+                <button class="tui-button"
+                    onclick="CB.add_metric_variable_onclick()"
+                    >[+] Add variable</button>    
+                <br>
+
+
+                <table class='cb-variables-table'>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td>datetime_from</td>
+                        <td>datetime</td>
+                        <td class='cb-delete-button-container'></td>
+                    </tr>
+
+                    <tr>
+                        <td>datetime_to</td>
+                        <td>datetime</td>
+                        <td class='cb-delete-button-container'></td>
+                    </tr>
+                </tbody>
+
+                </table>
+
+
+                </div>
+
+                <h1 class='cb-subtitle'>Stages</h1>
                     <button class="tui-button"
                         onclick="CB.add_new_metric_stage_onclick()"
-                        >[+]Add stage</button>    
+                        >[+] Add stage</button>    
                     <br>
             <div class="tui-panel cb-stage-tabs" style="width: 100%;">    
             <div class="tui-tabs cb-tabs-header">    

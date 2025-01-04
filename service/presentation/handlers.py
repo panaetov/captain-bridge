@@ -176,6 +176,7 @@ def _dump_metric(metric: Metric):
         "internal_id": metric.internal_id,
         "name": metric.name,
         "pipeline": metric.stages,
+        "variables": metric.variables,
     }
 
 
