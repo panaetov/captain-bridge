@@ -724,10 +724,9 @@ $(function() {
             `<td><select value='${type}' onchange='CB.configure_metric_debug_variables()'>` +
             "<option>text</option>" +
             "<option>number</option>" +
+            "<option>datetime</option>" +
             "</select></td>"
         );
-        // TBD: return datetime option and support it in dashboards.
-        // "<option>datetime</option>" +
         tr.append("<td class='cb-delete-button-container'><button class='' onclick='CB.delete_metric_variable_onclick(this);'>X</td>")
         tbody.append(tr);
     }
@@ -820,22 +819,29 @@ $(function() {
     CB.add_dashboard_variable = function(data) {
         data = data || {};
         var containers = $("#cb-variables");
-		var current_vars = containers.find('.cb-variable');
-		var i;
-		var exists = false;
-		for(i=0; i<current_vars.length; ++i) {
-			var current_name = $(current_vars[i]).find('.cb-variable-name').val();
-			if (current_name == data.name) {
-				exists = true;
-			}
-		}
+        var current_vars = containers.find('.cb-variable');
+        var i;
+        var current_variable_block = null;
+        for(i=0; i<current_vars.length; ++i) {
+            var current_name = $(current_vars[i]).find('.cb-variable-name').val();
+            if (current_name == data.name) {
+                current_variable_block = $(current_vars[i]);
+            }
+        }
 
-		if (exists) {
-			return;
-		}
+        var container;
+        if (current_variable_block) { 
+            if (data.type == 'datetime') {
+                container = current_variable_block;
+                container.empty();
+            } else {
+                return;
+            }
 
-        var container = $("<div class='cb-variable'></div>");
-        containers.append(container);
+        } else {
+            container = $("<div class='cb-variable'></div>");
+            containers.append(container);
+        }
 
         var name = $("<input disabled class='tui-input cb-variable-name'>");
         container.append(name);
@@ -843,20 +849,37 @@ $(function() {
 
         container.append(' = ');
 
-        var select = $("<select class='tui-input cb-variable-value'></select>");
-        container.append(select);
+        if (data.type == 'datetime') {
+            var select = $(
+                "<input class='cb-datetime cb-variable-value' " +
+                "type='datetime-local'></input>"
+            );
+            container.append(select);
 
-        var textarea = $("<textarea class='tui-input cb-variable-options'></textarea>");
-        container.append(textarea);
+        } else {
+            var select = $("<select class='tui-input cb-variable-value'></select>");
+            container.append(select);
 
-        container.append("<button onclick='CB.edit_dashboard_variable_option_onclick(this);'>&#9477;</button>");
-        container.append("<br/>");
+            var textarea = $("<textarea class='tui-input cb-variable-options'></textarea>");
+            container.append(textarea);
 
-        if (data.options) {
-            textarea.val(data.options);
-            var options = data.options.split("\n");
-            for(i=0; i<options.length; ++i) {
-                select.append(`<option>${options[i]}</options>`);
+            container.append("<button onclick='CB.edit_dashboard_variable_option_onclick(this);'>&#9477;</button>");
+            container.append("<br/>");
+
+            var i;
+            for(i=0; i<(CB.DASHBOARD.variables || []).length; ++i) {
+                var vv = CB.DASHBOARD.variables[i];
+                if (vv.name == data.name) {
+                    data.options = vv.options;
+                }
+            }
+
+            if (data.options) {
+                textarea.val(data.options);
+                var options = data.options.split("\n");
+                for(i=0; i<options.length; ++i) {
+                    select.append(`<option>${options[i]}</options>`);
+                }
             }
         }
     }
@@ -2417,7 +2440,7 @@ $(function() {
             "<select class='tui-input cb-custom-field-type cb-100'>" +
             "<option>text</option>" +
             "<option>number</option>" +
-        	"<option>datetime</option>" +
+            "<option>datetime</option>" +
             "</select>"
         );
         type.val(type_value || 'text');
@@ -4164,7 +4187,7 @@ $(function() {
         // popup.find(".cb-popup-text").html(html);
 
         popup.show();
-    }	
+    }    
 
     CB.add_metric_to_dashboard = function(internal_id, prepend, metric_type) {
         metric_type = metric_type || 'table';
@@ -4222,12 +4245,12 @@ $(function() {
                 legend.html(legend_html);
 
 
-				var i;
-				for(i=0; i<metric.variables.length; ++i) {
-					var variable = metric.variables[i];
+                var i;
+                for(i=0; i<metric.variables.length; ++i) {
+                    var variable = metric.variables[i];
 
-					CB.add_dashboard_variable(variable);
-				}
+                    CB.add_dashboard_variable(variable);
+                }
                 CB.refresh_metric(internal_id);
             },
             error: CB.process_http_error
@@ -4505,6 +4528,8 @@ $(function() {
 
     }
 
+    CB.DASHBOARD = {};
+
     CB.render_dashboard_form = function(internal_id) {
         location.hash = `dashboard:${internal_id || ''}`;
 
@@ -4528,6 +4553,7 @@ $(function() {
                 crossDomain: true,
 
                 success: function(dashboard) {
+                    CB.DASHBOARD = dashboard;
                     $legend.text("Dashboard <" + dashboard.name + ">");
                     $form.find(".cb-internal-id-input").val(dashboard.internal_id);
                     $form.find(".cb-name-input").val(dashboard.name);
@@ -4541,14 +4567,14 @@ $(function() {
                         CB.add_metric_to_dashboard(
                             metric_internal_id,
                             false,
-                            dashboard.metric_types[metric_internal_id]
+                            dashboard.metric_types[metric_internal_id],
                         );
                     }
                     // CB.refresh_dashboard();
                     for(i=0; i<dashboard.variables.length; ++i) {
-                        CB.add_dashboard_variable(
-                            dashboard.variables[i]
-                        );
+                        // CB.add_dashboard_variable(
+                        //     dashboard.variables[i]
+                        // );
                     }
 
                     _finish_form();
