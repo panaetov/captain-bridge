@@ -489,6 +489,14 @@
                 <br>
                 <input class='cb-internal-id-input disabled cb-invisible' class="tui-input" value="" /><br>
                 Name..............: <input class='cb-name-input'class="tui-input" value="" /><br>
+
+				<div class='cb-divider'><h1>Metrics</h1></div>
+                <button class="cb-float-right  tui-button"
+                    onclick="CB.add_new_metric_to_dashboard()"
+                    >[+]Add metric</button>    
+                <button class="cb-float-right cb-refresh-metric-button tui-button white-255-text" onclick="CB.refresh_dashboard()">Refresh</button>    
+
+
                 <h1>Variables</h1>
                 <div id='cb-variables'>
                     <div class='cb-variable'>
@@ -511,11 +519,6 @@
                 </div>
 
                 <br/>
-
-                <button class="tui-button white-255-text" onclick="CB.refresh_dashboard()">Refresh</button>    
-                <button class="tui-button"
-                    onclick="CB.add_new_metric_to_dashboard()"
-                    >[+]Add metric</button>    
 
                 <div class='cb-metrics-presentation-container'></div>
             </fieldset>

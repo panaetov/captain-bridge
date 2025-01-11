@@ -2149,8 +2149,8 @@ $(function() {
     }
 
     CB.actualize_stage_inputs = function() {
-        var $all_stage_inputs = $(".cb-input-stage-name-input");
-        var $tabs = $(".cb-stage-tabs .cb-tabs-header .tui-tab");
+        var $all_stage_inputs = $("#cb-metric-form .cb-input-stage-name-input");
+        var $tabs = $("#cb-metric-form .cb-stage-tabs .cb-tabs-header .tui-tab");
         var i;
         var j;
 
@@ -4015,8 +4015,12 @@ $(function() {
     CB._METRICS_ROOT = '';
     CB._DASHBOARDS_ROOT = '';
 
-    CB.render_metrics_table = function(root) {
+    CB.render_metrics_table = function(root, escaped) {
         location.hash = "metrics";
+
+        if (root && escaped) {
+            root = unescape(root);
+        }
 
         CB._METRICS_ROOT = root;
         CB.hide_all_innerblocks();
@@ -4036,19 +4040,22 @@ $(function() {
 
                 var super_root = metrics.super_root;
                 if (super_root !== null) {
-                    $tbody.append(
-                        "<tr class='cb-catalog' onclick=\"CB.render_metrics_table('" + super_root + "');\">" +
+                    super_root = escape(super_root);
+                    var tr = $(
+                        `<tr class='cb-catalog' onclick="CB.render_metrics_table('${super_root}', true);">` +
                         "<td>&#9776;&nbsp;..</td>" +
                         "</tr>"
-                    );
+                    ); 
+                    $tbody.append(tr);
                 }
 
                 var i;
                 var catalogs = (metrics.grouped || []).sort();
                 for(i=0; i<catalogs.length; ++i) {
                     c = catalogs[i];
+                    c1 = escape(c);  //.replaceAll('"', '\\"').replaceAll("'", "\\'");
                     $tbody.append(
-                        "<tr class='cb-catalog' onclick=\"CB.render_metrics_table('" + c + "');\">" +
+                        `<tr class='cb-catalog' onclick='CB.render_metrics_table("${c1}", true);'>` +
                         "<td>&#9776;&nbsp;" + c + "</td>" +
                         "</tr>"
                     );
@@ -4196,17 +4203,13 @@ $(function() {
         var $form = $(
             "<fieldset draggable='true' class='" + "cb-metric-presentation-block" + "'>" +
             "<legend>" + '' + "</legend>" +
-            "<button class='tui-button red-168 white-text cb-remove-metric-button' " +
-            `onclick='CB.remove_metric_from_dashboard(this);' ` +
-            ">Remove</button>" +
-
             "<div class='cb-label'>Metric type:</div> <select " +
             "onchange='CB.apply_metric_type_to_chart(\"" + internal_id + "\")' " +
             "class=\"tui-input cb-metric-type\">" +    
             "<option>table</option>" +
             "<option>timeseries</option>" +
             "</select>" +
-            "<a href='/#cb-dashboard-datatypes' class='cb-question-mark' target='_blank'>&quest;<a>" +
+            "<a href='https://github.com/panaetov/captain-bridge/wiki/Dashboards#switching-between-chart-and-table' class='cb-question-mark' target='_blank'>&quest;<a>" +
             "<br>" +
 
             "<div class='cb-controls'>" +
@@ -4237,10 +4240,13 @@ $(function() {
                 var legend = fieldset.find('legend');
 
                 var legend_html = (
-                    `${metric.name}` + 
-                    "<button class='cb-microbutton' onclick='CB.move_metric_up(this);'>&#8593;</button>" + 
-                    "<button class='cb-microbutton' onclick='CB.move_metric_down(this);'>&#8595;</button>" +
-                    `<button class='cb-edit-metric-button'><a href='/#metric:${metric.internal_id}' target='_blank'>?</a></button>`
+                    `<span class='cb-metric-legend-name'>${metric.name}</span>` + 
+            		"<button class='tui-button cb-float-right red-168 white-text cb-remove-metric-button' " +
+            		`onclick='CB.remove_metric_from_dashboard(this);' ` +
+            		">Remove</button>" + 
+                    "<button class='cb-microbutton cb-float-right' onclick='CB.move_metric_up(this);'>&#8593;</button>" + 
+                    "<button class='cb-microbutton cb-float-right' onclick='CB.move_metric_down(this);'>&#8595;</button>" +
+                    `<button class='cb-edit-metric-button tui-button'><a href='/#metric:${metric.internal_id}' target='_blank'>Edit</a></button>`
                 );
                 legend.html(legend_html);
 

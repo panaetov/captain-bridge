@@ -69,21 +69,27 @@ class Pipeline:
 
     async def run_stage(self, stage):
         self.logger(f"Running stage {stage.name}...")
-        values = {}
-        for input_ in stage.inputs:
-            if input_.input_type == "db":
-                value = self._get_collection(input_.collection_name)
-                values[input_.alias] = value
+        try:
+            values = {}
+            for input_ in stage.inputs:
+                if input_.input_type == "db":
+                    value = self._get_collection(input_.collection_name)
+                    values[input_.alias] = value
 
-            elif input_.input_type == "stage":
-                for substage in self.stages:
-                    if substage.name == input_.stage_name:
-                        value = await self.run_stage(substage)
-                        values[input_.alias] = value
-            else:
-                raise RuntimeError(f"Unknown input type {input_.input_type}")
+                elif input_.input_type == "stage":
+                    for substage in self.stages:
+                        if substage.name == input_.stage_name:
+                            value = await self.run_stage(substage)
+                            values[input_.alias] = value
+                else:
+                    raise RuntimeError(f"Unknown input type {input_.input_type}")
 
-        result = await self.apply_action(stage.action, values)
+            result = await self.apply_action(stage.action, values)
+
+        except Exception as e:
+            self.logger(f"Stage {stage.name} failed: {e}")
+            raise
+
         self.logger(f"Stage {stage.name} finished.")
         return result
 
@@ -185,6 +191,7 @@ class Pipeline:
         if self._is_collection(input_value):
             collection = input_value
 
+            self.logger(f"Collection: {input_value.name}.")
             cursor = collection.aggregate(mongo_pipeline)
             return await cursor.to_list(None)
 
@@ -263,7 +270,11 @@ class Metric(pydantic.BaseModel):
             db=db,
             scope=scope,
         )
-        result = await pipeline.run()
+        try:
+            result = await pipeline.run()
+        except Exception as e:
+            return {"error": str(e)}, pipeline.logger.messages
+
         return result, pipeline.logger.messages
 
 

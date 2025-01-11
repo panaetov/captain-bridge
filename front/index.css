@@ -95,11 +95,12 @@ input, select, textarea, fieldset {
 }
 
 .cb-name-input {
+	width: 50em;
 }
 
 .cb-metric-presentation-block {
     border: 0;
-    border-top: 1px solid;
+    //border-top: 1px solid;
 }
 
 .cb-metric-presentation {
@@ -437,7 +438,7 @@ textarea:focus {
 }
 
 .cb-remove-metric-button {
-    margin-right: 20px;
+    margin-left: 20px;
     float: right;
     margin-bottom: 0em;
 }
@@ -636,6 +637,7 @@ body {
 
 .cb-edit-metric-button {
     margin-left: 5px;
+    min-width: 4em;
 }
 
 td {
@@ -960,4 +962,25 @@ td.cb-employee {
 
 .cb-stage-results thead {
 	color: black;
+}
+
+.cb-float-right {
+	float: right;
+}
+
+.cb-metric-presentation-block legend {
+	width: 100%;
+}
+
+.cb-divider {
+	margin-top: 2em;
+	font-size:1.25em;
+}
+
+.cb-metric-legend-name {
+	margin-right: 1em;
+}
+
+.cb-refresh-metric-button {
+	margin-right: 1em;
 }
