@@ -2996,6 +2996,12 @@ $(function() {
         },
 
         onchange_metric: function(input) {
+            var $form = $("#cb-planning-form");
+            var metric_internal_id = $form.find(".cb-metric-input").val();
+        	$("#cb-change-velocity-metric-link a").attr(
+        		"href",
+        		`/#metric:${metric_internal_id}`
+        	);
             CB.PLANNING.actualize_employees();
         },
 
@@ -3645,7 +3651,7 @@ $(function() {
                     if (target_duration <= duration) {
                         $tr.append(
                             `<td class='cb-issue' colspan="${real_duration}">` +
-                            `<span>${issue.issue.key}</span></td>`
+                            `<span>${issue.issue.key} ${issue.issue.summary}</span></td>`
                         );
                         issue.ends_in = offset;
                         break;
@@ -3663,7 +3669,7 @@ $(function() {
                         if (real_duration) {
                             $tr.append(
                                 `<td class='cb-issue' colspan="${real_duration}">` +
-                                `<span>${issue.issue.key}</span></td>`
+                                `<span>${issue.issue.key} ${issue.issue.summary}</span></td>`
                             );
                             $tr.append(`<td class='cb-day-off'></td>`);
                             real_duration = 0;
@@ -3679,7 +3685,7 @@ $(function() {
                     if (j == (this.days.length - 1) && real_duration) {
                         $tr.append(
                             `<td class='cb-issue' colspan="${real_duration}">` +
-                            `${issue.issue.key}</td>`
+                            `${issue.issue.key} ${issue.issue.summary}</td>`
                         );
                     }
                 }

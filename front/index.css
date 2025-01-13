@@ -984,3 +984,15 @@ td.cb-employee {
 .cb-refresh-metric-button {
 	margin-right: 1em;
 }
+
+#cb-change-velocity-metric-link {
+	width: 10em;
+    display: inline-block;
+    min-width: 10em;
+    position: relative;
+    top: -7px;
+}
+#cb-change-velocity-metric-link a {
+	display: inline-block;
+	width: 100%;
+}

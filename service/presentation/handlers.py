@@ -566,7 +566,7 @@ def _get_issue_repository(request: Request):
 def _dump_issue_option(issue):
     return {
         "id": issue.internal_id,
-        "text": f"{issue.key} <{issue.jira.name}>",
+        "text": f"{issue.key} <{issue.jira.name}> {issue.summary}",
         "issue": issue,
     }
 
