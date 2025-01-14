@@ -2414,7 +2414,7 @@ $(function() {
     }
 
     CB.delete_jira_custom_field_onclick = function(button) {
-        var $tbody = $(button).parents('tboty');
+        var $tbody = $(button).parents('tbody');
 
         $(button).parents('tr').remove();
         if ($tbody.find('tr').length == 0) {
@@ -2545,7 +2545,7 @@ $(function() {
                             custom_field.target,
                             custom_field.type
                         );
-                        $('#cb-empty-custom-fields-list').hide();
+        				$('#cb-empty-custom-fields-list').hide();
                     }
 
                     _finish_form();
