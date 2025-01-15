@@ -781,8 +781,9 @@ button.cb-down {
 }
 
 .cb-done {
-    min-width: 4em;
-    width: 100%;
+	float: left;
+    width: 4em !important;
+    min-width: 0;
 }
 
 .cb-float-left {
@@ -995,4 +996,57 @@ td.cb-employee {
 #cb-change-velocity-metric-link a {
 	display: inline-block;
 	width: 100%;
+}
+
+#cb-reread-velocity-metric-button {
+    display: inline-block;
+    min-width: 5em;
+    position: relative;
+    top: -7px;
+    font-size: 1em;
+}
+
+.cb-overdue-progress {
+    border-radius: 10px;
+    background: red;
+    padding: 2px 10px;
+    /margin-left: 1em;
+    color: white;	
+	font-weight: bold;
+	margin-left: 1em;
+}
+
+.cb-has-overdue {
+	color: red;
+	font-weight: bold;
+}
+
+.cb-tooltip {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black;
+}
+
+.cb-tooltip .cb-tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -60px;
+  
+  /* Fade in tooltip - takes 1 second to go from 0% to 100% opac: */
+  opacity: 0;
+  transition: opacity 1s;
+}
+
+.cb-tooltip:hover .cb-tooltiptext {
+  visibility: visible;
+  opacity: 1;
 }

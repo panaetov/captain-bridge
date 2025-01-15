@@ -2948,6 +2948,7 @@ $(function() {
             } else {
                 done_percent = Math.ceil(issue.done_percent);
             }
+            var formated_done_percent = this.format_done_percent(done_percent);
             var html = (
                 `<tr class='cb-assigned-issues-item ${klass}'>` +
                 `<td class='cb-delete-button-td'><button onclick="CB.PLANNING.ondelete_assigned_issue(this);">X</button></td>` +
@@ -2960,9 +2961,11 @@ $(function() {
                 `<td>${issue.issue.summary}</td>` +
                 `<td>${issue.size}</td>` +
                 `<td class='cb-ends-in'></td>` +
-                `<td class='cb-overdue'>${issue.overdue}</td>` +
                 `<td><input onchange="CB.PLANNING.onchange_done_percent(this);" ` +
-                `type="number" class='cb-done' min="0" value="${this.format_done_percent(done_percent)}"></td>` +
+                `type="number" class='cb-done' min="0" ` +
+                `value="${Math.min(formated_done_percent, 100)}">` +
+        		`${(formated_done_percent > 100)? "<span class='cb-tooltip cb-overdue-progress'>!<span class='cb-tooltiptext'>Planned time has expired... </span></span>": ""}</td>` +
+                `<td class='cb-overdue ${issue.overdue > 0? "cb-has-overdue": ""}'>${issue.overdue}</td>` +
                 `<td><button onclick='CB.PLANNING.onclick_move_issue_up(this);' class='cb-microbutton'>&#8593;</button>` +
                 `<button onclick='CB.PLANNING.onclick_move_issue_down(this);' class='cb-microbutton'>&#8595;</button></td>` +
                 `</tr>`
@@ -2998,10 +3001,12 @@ $(function() {
         onchange_metric: function(input) {
             var $form = $("#cb-planning-form");
             var metric_internal_id = $form.find(".cb-metric-input").val();
-        	$("#cb-change-velocity-metric-link a").attr(
-        		"href",
-        		`/#metric:${metric_internal_id}`
-        	);
+            if (metric_internal_id) {
+        		$("#cb-change-velocity-metric-link a").attr(
+        			"href",
+        			`/#metric:${metric_internal_id}`
+        		);
+        	}
             CB.PLANNING.actualize_employees();
         },
 
@@ -3501,8 +3506,9 @@ $(function() {
                     '<th>Status</th><th>Summary</th>' +
                     '<th>Size</th>' +
                     '<th>Finishes in</th>' +
+                    '<th>Progress (%)</th>' +
                     '<th>Overdue</th>' +
-                    '<th>Time spent (%)</th><th></th></tr></thead>' +
+                    '<th></th></tr></thead>' +
                     '<tbody></tbody>' +
                     '</table>' +
                     '<div class="cb-empty-warning">No issues yet...</div>' +
