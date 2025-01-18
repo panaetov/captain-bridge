@@ -64,8 +64,14 @@
                         </div>
                     </li>
 
-                    <li class='cb-header-item'><a
-                        class="white-255-hover black-text-hover cursor-pointer inline" href='/'>README</a></li>
+                    <li class='cb-header-item'>
+                        <a class="white-255-hover black-text-hover cursor-pointer inline"
+                           href='/#readme'
+							onclick="CB.render_readme();"
+                        >
+                        README
+                        </a>
+                    </li>
 
                 </ul>
             </fieldset>
@@ -501,7 +507,7 @@
                 Name..............: <input class='cb-name-input'class="tui-input" value="" /><br>
 
 				<div class='cb-divider'><h1>Metrics</h1></div>
-                <button class="cb-float-right  tui-button"
+                <button class="tui-button"
                     onclick="CB.add_new_metric_to_dashboard()"
                     >[+]Add metric</button>    
                 <button class="cb-float-right cb-refresh-metric-button tui-button white-255-text" onclick="CB.refresh_dashboard()">Refresh</button>    
@@ -582,6 +588,32 @@
                 </div>    
             </div>    
         </div>    
+
+        <div class="tui-panel white-168 black-255-text cb-popup" id='cb-confirm-saving-popup'>    
+            <div class="tui-panel-header">    
+                   Unsaved changes
+            </div>    
+            <div class="tui-panel-content">    
+                <span class='cb-popup-text'>
+                    <div class='cb-confirm-changes-sign'>
+                    	<!-- <img src='/front/images/tsoi5.png'>-->
+                    </div>
+                    <h1>You have been changing the form.</h1>
+                    <br>
+                    Do you really want to close it and <span class='cb-confirm-bold'>discard all changes</span>?
+                </span>
+                <br><br>    
+                <div class="center">    
+                    <button class="cb-yes-button tui-button red-168" style="width: 80px"
+                        onclick='CB.confirm_form_close_on_yes();'>Yes</button>    
+
+                    <button class="tui-button green-168" style="width: 80px"
+                        onclick='CB.close_popup(this);'>No</button>    
+                </div>    
+            </div>    
+        </div>    
+
+
 
         <div class="tui-panel white-168 black-255-text cb-popup" id='cb-delete-dashboard-popup'>    
             <div class="tui-panel-header">    

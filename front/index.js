@@ -63,7 +63,23 @@ $(function() {
         CB.make_tab_active($this);
     });
 
-    $("body").on('change', ".cb-stage-tabs .cb-variables input", function(event) {
+    $("#cb-planning-form").on('change', "input,select", function() {
+        CB._FORM_CLEAN = false;
+    });
+
+    $("#cb-jira-form").on('change', "input,select", function() {
+        CB._FORM_CLEAN = false;
+    });
+
+    $("#cb-metric-form").on('change', "input,select", function() {
+        CB._FORM_CLEAN = false;
+    });
+
+    $("#cb-dashboard-form").on('change', ".cb-name-input", function() {
+        CB._FORM_CLEAN = false;
+    });
+
+    $("body").on('change', "#cb-metric-form .cb-stage-tabs .cb-variables input", function(event) {
         var active_block = $(event.target).parents('.cb-variables');
 
         CB.sync_metric_variables(active_block);
@@ -164,6 +180,14 @@ $(function() {
     }
 
     CB.render_jiras_table = function() {
+        var clean = CB.confirm_form_close(function() {
+            CB.render_jiras_table();
+        });
+
+        if (!clean) {
+            return;
+        }
+
         location.hash = "jiras";
 
         CB.hide_all_innerblocks();
@@ -547,6 +571,27 @@ $(function() {
         $(button).parents('.cb-input-group').remove();
     }
 
+    CB._FORM_CLEAN = true;
+    CB._CONFIRM_YES_CALLBACK = null;
+
+    CB.confirm_form_close_on_yes = function() {
+        CB.close_popup("#cb-confirm-saving-popup .cb-yes-button");
+        CB._FORM_CLEAN = true;
+        if (CB._CONFIRM_YES_CALLBACK) {
+            CB._CONFIRM_YES_CALLBACK();
+        }
+    } 
+    
+    CB.confirm_form_close = function(yes_cb) {
+        if (!CB._FORM_CLEAN) {
+            CB._CONFIRM_YES_CALLBACK = yes_cb;
+            var popup = $("#cb-confirm-saving-popup");
+            popup.show();
+            return;
+        }
+        return CB._FORM_CLEAN;
+    }
+
     CB.hide_all_innerblocks = function() {
         $("#cb-mainblock").show();
         $(".cb-innerblock").hide();
@@ -706,6 +751,8 @@ $(function() {
     }
 
     CB.add_metric_variable_onclick = function() {
+        CB._FORM_CLEAN = false;
+
         CB.add_metric_variable_spec();
         CB.configure_metric_debug_variables();
     }
@@ -810,6 +857,8 @@ $(function() {
     }
 
     CB.delete_metric_variable_onclick = function(button) {
+        CB._FORM_CLEAN = false;
+
         var tr = $(button).parents('.cb-metric-variable-row');
         tr.remove();
 
@@ -908,6 +957,8 @@ $(function() {
     }
 
     CB.save_variable_options = function() {
+        CB._FORM_CLEAN = false;
+
         var popup = $("#cb-dashboard-variable-options");
 
         var options_val = popup.find('.cb-value').val();
@@ -1045,6 +1096,7 @@ $(function() {
             }),
 
             success: function(result) {
+                CB._FORM_CLEAN = true;
                 CB.show_popup('OK', 'Metric is saved');
                 $form.find(".cb-internal-id-input").val(result.internal_id);
                 location.hash = `metric:${result.internal_id || ''}`;
@@ -1891,7 +1943,9 @@ $(function() {
     }
 
     CB.delete_stage_on_click = function(button) {
-        var $tabs = $(".cb-stage-tabs .tui-tab");
+        CB._FORM_CLEAN = false;
+
+        var $tabs = $("#cb-metric-form .cb-stage-tabs .tui-tab");
         if ($tabs.length == 1) {
             CB.show_popup("Invalid action", "Metric must have at least one stage");
             return;
@@ -1920,7 +1974,7 @@ $(function() {
         }
 
         var i;
-        var $tabs = $(".cb-stage-tabs .tui-tab");
+        var $tabs = $("#cb-metric-form .cb-stage-tabs .tui-tab");
         var number = 1;
         for(i=0; i<$tabs.length; ++i) {
             var $tab = $($tabs[i]);
@@ -1976,6 +2030,8 @@ $(function() {
     }
 
     CB.add_new_metric_stage_onclick = function() {
+        CB._FORM_CLEAN = false;
+
         CB.add_metric_pipeline_stage();
         CB.actualize_stage_inputs();
         var block = $(".cb-variables")[0];
@@ -1987,7 +2043,7 @@ $(function() {
 
         if (!stage) {
 
-            var $tabs = $(".cb-stage-tabs .cb-tabs-header .tui-tab");
+            var $tabs = $("#cb-metric-form .cb-stage-tabs .cb-tabs-header .tui-tab");
             var j;
             var stage_names = [];
             for(j=0; j<$tabs.length; ++j) {
@@ -2214,7 +2270,7 @@ $(function() {
         var tab_header = $("[data-tab-content=" + content_id + "]");
         var prev_stage_name = tab_header.html();
 
-        var $tabs = $(".cb-stage-tabs .tui-tab");
+        var $tabs = $("#cb-metric-form .cb-stage-tabs .tui-tab");
         var j;
         for (j=0; j<$tabs.length; ++j) {
             var $tab = $($tabs[j]);
@@ -2400,6 +2456,7 @@ $(function() {
             data: JSON.stringify(payload),
 
             success: function(result) {
+                CB._FORM_CLEAN = true;
                 CB.show_popup('OK', 'Source is saved');
                 CB.render_jira_form(result.internal_id);
                 location.hash = `jira:${result.internal_id || ''}`;
@@ -2409,11 +2466,14 @@ $(function() {
     }
 
     CB.add_jira_custom_fields_onclick = function() {
+        CB._FORM_CLEAN = false;
+
         CB.add_jira_custom_fields();
         $('#cb-empty-custom-fields-list').hide();
     }
 
     CB.delete_jira_custom_field_onclick = function(button) {
+        CB._FORM_CLEAN = false;
         var $tbody = $(button).parents('tbody');
 
         $(button).parents('tr').remove();
@@ -2484,6 +2544,14 @@ $(function() {
     }
 
     CB.render_jira_form = function(internal_id, preserve_before_update) {
+        var clean = CB.confirm_form_close(function() {
+            CB.render_jira_form(internal_id, preserve_before_update);
+        });
+
+        if (!clean) {
+            return;
+        }
+
         location.hash = `jira:${internal_id || ''}`;
 
         var $form = $("#cb-jira-form");
@@ -2545,7 +2613,7 @@ $(function() {
                             custom_field.target,
                             custom_field.type
                         );
-        				$('#cb-empty-custom-fields-list').hide();
+                        $('#cb-empty-custom-fields-list').hide();
                     }
 
                     _finish_form();
@@ -2737,6 +2805,8 @@ $(function() {
             data: JSON.stringify(payload),
 
             success: function(result) {
+                CB._FORM_CLEAN = true;
+
                 var self = CB.PLANNING;
 
                 CB.show_popup('OK', 'Planning is saved');
@@ -2964,7 +3034,7 @@ $(function() {
                 `<td><input onchange="CB.PLANNING.onchange_done_percent(this);" ` +
                 `type="number" class='cb-done' min="0" ` +
                 `value="${Math.min(formated_done_percent, 100)}">` +
-        		`${(formated_done_percent > 100)? "<span class='cb-tooltip cb-overdue-progress'>!<span class='cb-tooltiptext'>Planned time has expired... </span></span>": ""}</td>` +
+                `${(formated_done_percent > 100)? "<span class='cb-tooltip cb-overdue-progress'>!<span class='cb-tooltiptext'>Planned time has expired... </span></span>": ""}</td>` +
                 `<td class='cb-overdue ${issue.overdue > 0? "cb-has-overdue": ""}'>${issue.overdue}</td>` +
                 `<td><button onclick='CB.PLANNING.onclick_move_issue_up(this);' class='cb-microbutton'>&#8593;</button>` +
                 `<button onclick='CB.PLANNING.onclick_move_issue_down(this);' class='cb-microbutton'>&#8595;</button></td>` +
@@ -2999,14 +3069,16 @@ $(function() {
         },
 
         onchange_metric: function(input) {
+            CB._FORM_CLEAN = false;
+
             var $form = $("#cb-planning-form");
             var metric_internal_id = $form.find(".cb-metric-input").val();
             if (metric_internal_id) {
-        		$("#cb-change-velocity-metric-link a").attr(
-        			"href",
-        			`/#metric:${metric_internal_id}`
-        		);
-        	}
+                $("#cb-change-velocity-metric-link a").attr(
+                    "href",
+                    `/#metric:${metric_internal_id}`
+                );
+            }
             CB.PLANNING.actualize_employees();
         },
 
@@ -3075,6 +3147,7 @@ $(function() {
         },
 
         onclick_move_issue_up: function(button) {
+            CB._FORM_CLEAN = false;
             var employee = $(button).parents(".cb-employee-row").attr('cb-employee');
 
             var $row = $(button).parents(".cb-assigned-issues-item");
@@ -3098,6 +3171,8 @@ $(function() {
         },
 
         onclick_move_issue_down: function(button) {
+            CB._FORM_CLEAN = false;
+
             var employee = $(button).parents(".cb-employee-row").attr('cb-employee');
 
             var $row = $(button).parents(".cb-assigned-issues-item");
@@ -3307,11 +3382,15 @@ $(function() {
             var datetime_from = $("#cb-planning-date-from-for-day-off").val();
             var datetime_to = $("#cb-planning-date-to-for-day-off").val();
 
+            CB._FORM_CLEAN = false;
+
             CB.PLANNING.add_day_off(employee, datetime_from, datetime_to);
             CB.PLANNING.actualize_day_offs();
         },
 
         ondelete_day_off: function(button) {
+            CB._FORM_CLEAN = false;
+
             $(button).parents('tr').remove();
             this.actualize_day_offs();
         },
@@ -3836,6 +3915,14 @@ $(function() {
     };
 
     CB.render_plannings_table = function() {
+        var clean = CB.confirm_form_close(function() {
+            CB.render_plannings_table();
+        });
+
+        if (!clean) {
+            return;
+        }
+
         location.hash = "plannings";
 
         CB.hide_all_innerblocks();
@@ -3867,6 +3954,14 @@ $(function() {
     }
 
     CB.render_planning_form = function(internal_id, defaults) {
+        var clean = CB.confirm_form_close(function() {
+            CB.render_planning_form(internal_id, defaults);
+        });
+
+        if (!clean) {
+            return;
+        }
+
         location.hash = `planning:${internal_id || ''}`;
 
         var $form = $("#cb-planning-form");
@@ -3956,6 +4051,14 @@ $(function() {
     }
 
     CB.render_metric_form = function(internal_id, defaults) {
+        var clean = CB.confirm_form_close(function() {
+            CB.render_metric_form(internal_id, defaults);
+        });
+
+        if (!clean) {
+            return;
+        }
+
         location.hash = `metric:${internal_id || ''}`;
 
         var $form = $("#cb-metric-form");
@@ -4028,6 +4131,14 @@ $(function() {
     CB._DASHBOARDS_ROOT = '';
 
     CB.render_metrics_table = function(root, escaped) {
+        var clean = CB.confirm_form_close(function() {
+            CB.render_metrics_table(root, escaped);
+        });
+
+        if (!clean) {
+            return;
+        }
+
         location.hash = "metrics";
 
         if (root && escaped) {
@@ -4169,6 +4280,8 @@ $(function() {
     }
 
     CB.add_new_metric_to_dashboard = function() {
+        CB._FORM_CLEAN = false;
+
         var popup = $("#cb-add-new-metric-popup");
         popup.find(".tui-panel-header").html("Choose metric");
 
@@ -4253,9 +4366,9 @@ $(function() {
 
                 var legend_html = (
                     `<span class='cb-metric-legend-name'>${metric.name}</span>` + 
-            		"<button class='tui-button cb-float-right red-168 white-text cb-remove-metric-button' " +
-            		`onclick='CB.remove_metric_from_dashboard(this);' ` +
-            		">Remove</button>" + 
+                    "<button class='tui-button cb-float-right red-168 white-text cb-remove-metric-button' " +
+                    `onclick='CB.remove_metric_from_dashboard(this);' ` +
+                    ">Remove</button>" + 
                     "<button class='cb-microbutton cb-float-right' onclick='CB.move_metric_up(this);'>&#8593;</button>" + 
                     "<button class='cb-microbutton cb-float-right' onclick='CB.move_metric_down(this);'>&#8595;</button>" +
                     `<button class='cb-edit-metric-button tui-button'><a href='/#metric:${metric.internal_id}' target='_blank'>Edit</a></button>`
@@ -4284,12 +4397,16 @@ $(function() {
     }
 
     CB.remove_metric_from_dashboard = function(button) {
+        CB._FORM_CLEAN = false;
+
         var $button = $(button);
         var $block = $button.parents('.cb-metric-presentation-block');
         $block.remove();
     }
 
     CB.move_metric_up = function(button) {
+        CB._FORM_CLEAN = false;
+
         var $button = $(button);
         
         var $block = $button.parents('.cb-metric-presentation-block');
@@ -4298,6 +4415,8 @@ $(function() {
     }
 
     CB.move_metric_down = function(button) {
+        CB._FORM_CLEAN = false;
+
         var $button = $(button);
 
         var $block = $button.parents('.cb-metric-presentation-block');
@@ -4389,6 +4508,7 @@ $(function() {
 
             success: function(result) {
                 CB.show_popup('OK', 'Dashboard is saved');
+                CB._FORM_CLEAN = true;
                 $form.find(".cb-internal-id-input").val(result.internal_id);
                 location.hash = `dashboard:${result.internal_id || ''}`;
             },
@@ -4549,6 +4669,14 @@ $(function() {
     CB.DASHBOARD = {};
 
     CB.render_dashboard_form = function(internal_id) {
+        var clean = CB.confirm_form_close(function() {
+            CB.render_dashboard_form(internal_id);
+        });
+
+        if (!clean) {
+            return;
+        }
+
         location.hash = `dashboard:${internal_id || ''}`;
 
         CB.hide_all_innerblocks();
@@ -4609,6 +4737,14 @@ $(function() {
     }
 
     CB.render_dashboards_table = function(root) {
+        var clean = CB.confirm_form_close(function() {
+            CB.render_dashboards_table(root);
+        });
+
+        if (!clean) {
+            return;
+        }
+
         location.hash = "dashboards";
 
         CB._DASHBOARDS_ROOT = root;
@@ -4669,6 +4805,14 @@ $(function() {
     }
 
     CB.render_readme = function() {
+        var clean = CB.confirm_form_close(function() {
+            CB.render_readme();
+        });
+
+        if (!clean) {
+            return;
+        }
+
         CB.hide_all_innerblocks();
         $("#cb-mainblock").hide();
         $("#cb-readme").show(100);
