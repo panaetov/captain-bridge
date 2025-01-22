@@ -185,6 +185,7 @@
                 <span class="tui-fieldset-button left"><span class="green-255-text">■</span></span>    
 
                 <button class="tui-button white-255-text" onclick="CB.save_jira()">Save</button>    
+                <button class="tui-button red-168 white-255-text" onclick="CB.delete_jira_onclick()">[X]Delete</button>    
                 <button class="tui-button red-168 cb-exit-button white-text" onclick="CB.render_jiras_table();">Exit</button> 
 
                 <div class="red-168 full-width white-text" id='cb-jira-form-errors'>
@@ -656,7 +657,25 @@
             </div>    
         </div>    
 
+        <div class="tui-panel white-168 black-255-text cb-popup" id='cb-delete-jira-popup'>    
+            <div class="tui-panel-header">    
+                   Danger
+            </div>    
+            <div class="tui-panel-content">    
+                <span class='cb-popup-text'>
+                    <div class='cb-bones-sign'>&#9760;</div>
+                    Are you sure you want to delete this Jira source?
+                </span>
+                <br><br>    
+                <div class="center">    
+                    <button class="tui-button red-168" style="width: 80px"
+                        onclick='CB.delete_jira();'>Yes</button>    
 
+                    <button class="tui-button green-168" style="width: 80px"
+                        onclick='CB.close_popup(this);'>No</button>    
+                </div>    
+            </div>    
+        </div>    
 
         <div class="tui-panel white-168 black-255-text cb-popup" id='cb-delete-metric-popup'>    
             <div class="tui-panel-header">    

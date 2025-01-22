@@ -106,6 +106,7 @@ $(function() {
             run: GLOBALS.BACKEND_HOST + '/metric/pipeline/run'
         },
         jiras: {
+            delete: GLOBALS.BACKEND_HOST + '/sources/jiras',
             list: GLOBALS.BACKEND_HOST + '/sources/jiras',
             save: GLOBALS.BACKEND_HOST + '/sources/jiras',
             indexify: GLOBALS.WS_BACKEND_HOST + '/sources/jiras/indexify'
@@ -1010,6 +1011,36 @@ $(function() {
         } else {
             CB.show_popup('OK', 'Dashboard is deleted');
             CB.render_dashboards_table();
+        }
+    }
+
+    CB.delete_jira_onclick = function() {
+        var popup = $("#cb-delete-jira-popup");
+        popup.show();
+    }
+
+    CB.delete_jira = function() {
+        var popup = $("#cb-delete-jira-popup");
+        popup.hide();
+
+        $form = $("#cb-jira-form");
+        var internal_id = $form.find(".cb-internal-id-input").val();
+
+        if (internal_id) {
+            $.ajax({
+                url: URLS.jiras.delete + "/" + internal_id,
+                method: 'delete',
+                crossDomain: true,
+
+                success: function(result) {
+                    CB.show_popup('OK', 'Source is deleted');
+                    CB.render_jiras_table();
+                },
+                error: CB.process_http_error
+            });
+        } else {
+            CB.show_popup('OK', 'Source is deleted');
+            CB.render_jiras_table();
         }
     }
 
@@ -2368,14 +2399,22 @@ $(function() {
             return false;
         }
 
-        if (!payload.login) {
-            CB.add_form_error($errors, "Login is empty.");
-            return false;
-        }
+        if (payload.auth_method == 'basic') {
+            if (!payload.login) {
+                CB.add_form_error($errors, "Login is empty.");
+                return false;
+               }
 
-        if (!payload.password) {
-            CB.add_form_error($errors, "Password is empty.");
-            return false;
+            if (!payload.password) {
+                CB.add_form_error($errors, "Password is empty.");
+                return false;
+            }
+        } else {
+            if (!payload.token) {
+                CB.add_form_error($errors, "Personal token is empty.");
+                return false;
+            }
+
         }
 
         if (!payload.projects.length) {
@@ -2411,7 +2450,10 @@ $(function() {
         var raw_projects = $form.find(".cb-projects-input").val().split(/\s+/);
         var i;
         for(i=0; i<raw_projects.length; ++i) {
-            projects.push(raw_projects[i].trim());
+            var project_name = raw_projects[i].trim();
+            if (project_name) {
+                projects.push(project_name);
+            }
         }
 
         var custom_fields_trs = $("#cb-jira-custom-fields tr");
@@ -3034,7 +3076,7 @@ $(function() {
                 `<td><input onchange="CB.PLANNING.onchange_done_percent(this);" ` +
                 `type="number" class='cb-done' min="0" ` +
                 `value="${Math.min(formated_done_percent, 100)}">` +
-                `${(formated_done_percent > 100)? "<span class='cb-tooltip cb-overdue-progress'>!<span class='cb-tooltiptext'>Planned time has expired... </span></span>": ""}</td>` +
+                `${(done_percent > 100)? "<span class='cb-tooltip cb-overdue-progress'>!<span class='cb-tooltiptext'>Planned time has expired... </span></span>": ""}</td>` +
                 `<td class='cb-overdue ${issue.overdue > 0? "cb-has-overdue": ""}'>${issue.overdue}</td>` +
                 `<td><button onclick='CB.PLANNING.onclick_move_issue_up(this);' class='cb-microbutton'>&#8593;</button>` +
                 `<button onclick='CB.PLANNING.onclick_move_issue_down(this);' class='cb-microbutton'>&#8595;</button></td>` +
@@ -3979,6 +4021,7 @@ $(function() {
             CB.PLANNING.datetime_to = (new Date(base_dt)).setDate(base_dt.getDate() + days_qty);
             CB.PLANNING.render();
 
+            CB._FORM_CLEAN = true;
             $form.show(100);
         }
 
