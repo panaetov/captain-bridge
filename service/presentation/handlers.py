@@ -465,6 +465,19 @@ async def get_one_jira_handler(
     return _dump_jira(jiras[0], projects)
 
 
+@router.delete("/sources/jiras/{internal_id}")
+async def delete_jira_handler(
+    jira_repository: Annotated[
+        jira_repositories.JiraRepository, Depends(_get_jira_repository)
+    ],
+    internal_id: str,
+):
+    await jira_repository.delete_by_internal_id(internal_id)
+    return {
+        "internal_id": internal_id,
+    }
+
+
 class SaveJiraRequest(pydantic.BaseModel):
     internal_id: str | None = None
     name: str
