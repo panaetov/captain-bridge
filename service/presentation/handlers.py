@@ -135,10 +135,17 @@ async def save_dashboard_handler(
     }
 
 
+def _get_metric_repository(request: Request):
+    return request.app.container.metric_repositories.metrics
+
+
 @router.get("/metric/dashboards/{internal_id}")
 async def get_one_dashboard_handler(
     dashboard_repository: Annotated[
         DashboardRepository, Depends(_get_dashboard_repository)
+    ],
+    metric_repository: Annotated[
+        MetricRepository, Depends(_get_metric_repository)
     ],
     internal_id: str,
 ):
@@ -151,6 +158,9 @@ async def get_one_dashboard_handler(
     if not dashboards:
         raise HTTPException(status_code=404)
 
+    dashboard = dashboards[0]
+    metrics = await metric_repository.filter_by_internal_id(dashboard.metrics)
+    dashboard.metrics = [m.internal_id for m in metrics]
     return _dump_dashboard(dashboards[0])
 
 
@@ -165,10 +175,6 @@ async def delete_dashboard_handler(
     return {
         "internal_id": internal_id,
     }
-
-
-def _get_metric_repository(request: Request):
-    return request.app.container.metric_repositories.metrics
 
 
 def _dump_metric(metric: Metric):

@@ -4408,13 +4408,13 @@ $(function() {
                 var legend = fieldset.find('legend');
 
                 var legend_html = (
-                    `<span class='cb-metric-legend-name'>${metric.name}</span>` + 
+                    `<span class='cb-metric-legend-name'><a href='/#metric:${metric.internal_id}' target='_blank'>Metric: "<span class='cb-the-name'>${metric.name}</span>" <img src='/front/images/link.png'></a></span>` + 
                     "<button class='tui-button cb-float-right red-168 white-text cb-remove-metric-button' " +
                     `onclick='CB.remove_metric_from_dashboard(this);' ` +
                     ">Remove</button>" + 
-                    "<button class='cb-microbutton cb-float-right' onclick='CB.move_metric_up(this);'>&#8593;</button>" + 
-                    "<button class='cb-microbutton cb-float-right' onclick='CB.move_metric_down(this);'>&#8595;</button>" +
-                    `<button class='cb-edit-metric-button tui-button'><a href='/#metric:${metric.internal_id}' target='_blank'>Edit</a></button>`
+                    `<button class='cb-edit-metric-button tui-button'><a href='/#metric:${metric.internal_id}' target='_blank'>Edit</a></button>` +
+                    "<button class='cb-microbutton' onclick='CB.move_metric_up(this);'>&#8593;</button>" + 
+                    "<button class='cb-microbutton' onclick='CB.move_metric_down(this);'>&#8595;</button>"
                 );
                 legend.html(legend_html);
 

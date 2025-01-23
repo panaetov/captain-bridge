@@ -979,7 +979,16 @@ td.cb-employee {
 }
 
 .cb-metric-legend-name {
-	margin-right: 1em;
+	margin: 3em 0 1em 0;
+	font-size: 1.25em;
+	display: block;
+}
+
+
+.cb-metric-legend-name img {
+	height: 1em;
+	background: white;
+	padding: 2px;
 }
 
 .cb-refresh-metric-button {
@@ -1072,4 +1081,12 @@ td.cb-employee {
 	border: 10px double;
 	height: 10em;
 	background: white;
+}
+
+.cb-metric-head-section {
+	margin-bottom: 4em;
+}
+
+.cb-the-name {
+	text-decoration: underline;
 }
