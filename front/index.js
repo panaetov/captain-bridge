@@ -392,8 +392,8 @@ $(function() {
         var $button = $(button);
 
         var internal_id = $("#cb-jira-form").find(".cb-internal-id-input").val();
-        if (!internal_id) {
-            CB.show_popup('Invalid request', 'Jira is not saved yet.');
+        if (!internal_id || !CB._FORM_CLEAN) {
+            CB.show_popup('Cannot do it', 'Changes are not saved yet. Click Save button before proceeding. ');
             return;
         }
 
