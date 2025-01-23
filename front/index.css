@@ -40,7 +40,7 @@ body {
 .tui-table tbody tr td {
     border-right: 2px solid #a8a8a8;
     padding: 10px 10px;
-    cursor: pointer;
+    //cursor: pointer;
 }
 
 th {
