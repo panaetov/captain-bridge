@@ -4746,6 +4746,7 @@ $(function() {
                     $legend.text("Dashboard <" + dashboard.name + ">");
                     $form.find(".cb-internal-id-input").val(dashboard.internal_id);
                     $form.find(".cb-name-input").val(dashboard.name);
+                    $form.find(".cb-period").val('7d');
 
                     var i;
                     var $container = $("#cb-dashboard-form .cb-metrics-presentation-container");
