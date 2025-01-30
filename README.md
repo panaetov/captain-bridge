@@ -1,14 +1,9 @@
 # What is Captain Bridge?
 
-Captain Bridge is a tool for building metrics about performance of your team using data of Jira, Git and many other sources. 
-Additional feature is a planning tool which represents issues assigned to employees and their progress on Gant chart, predicts finish days of issues using personal employee performance and task sizes. 
+Captain Bridge is data-driven team management tool.
 
-So, Captain Bridge does next:
+Build metrics for your team using data of Jira, Git and many other sources. Also, plan workload of your team with automatic Gantt charts.
 
-* collects data of sources into its database with purpose-built periodic jobs,
-* provides a query costructor over collected data,
-* provides charts presenting results of saved queries,
-* provides planning tool predicting when issues will be finished.
 
 # Full Documentation
 Go to [wiki](https://github.com/panaetov/captain-bridge/wiki) 
