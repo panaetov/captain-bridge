@@ -82,6 +82,12 @@ $(function() {
     $("body").on('change', "#cb-metric-form .cb-stage-tabs .cb-variables input", function(event) {
         var active_block = $(event.target).parents('.cb-variables');
 
+        var i;
+        for (i=0; i<event.target.classList.length; ++i) {
+            if (event.target.classList[i] == 'cb-datetime') {
+                return;
+            }
+	    }
         CB.sync_metric_variables(active_block);
     });
 
@@ -4374,7 +4380,7 @@ $(function() {
             if (existing_internal_id == internal_id) {
                 CB.show_popup('OK', 'Metric is already added.');
                 return;
-	    }
+        }
         }
 
         metric_type = metric_type || 'table';

@@ -129,7 +129,6 @@ async def save_dashboard_handler(
 
     dashboard = Dashboard(**data)
     await dashboard_repository.save(dashboard)
-
     return {
         "internal_id": dashboard.internal_id,
     }
