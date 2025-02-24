@@ -108,6 +108,7 @@ class RunService:
         metric_type,
         scope,
     ):
+        logger.info(f"Worker url = {self.worker_url}")
         payload = {
             "internal_id": internal_id,
             "datetime_from": datetime_from.strftime("%Y-%m-%d %H:%M:%S"),

@@ -332,7 +332,7 @@ $(function() {
         var now = new Date();
         $(".cb-datetime-now").val(to_iso_only_minutes(now));
 
-        now.setDate(now.getDate() - 7);
+        now.setDate(now.getDate() - 30);
         $(".cb-datetime-week-ago").val(to_iso_only_minutes(now));
     }
 
@@ -4365,6 +4365,18 @@ $(function() {
     }    
 
     CB.add_metric_to_dashboard = function(internal_id, prepend, metric_type) {
+        var $slots = $(".cb-metric-presentation");
+
+        for(i=0; i<$slots.length; ++i) {
+            var $slot = $($slots[i]);
+
+            var existing_internal_id = $slot.attr('internal_id');
+            if (existing_internal_id == internal_id) {
+                CB.show_popup('OK', 'Metric is already added.');
+                return;
+	    }
+        }
+
         metric_type = metric_type || 'table';
 
         var $container = $("#cb-dashboard-form .cb-metrics-presentation-container");
@@ -4746,7 +4758,7 @@ $(function() {
                     $legend.text("Dashboard <" + dashboard.name + ">");
                     $form.find(".cb-internal-id-input").val(dashboard.internal_id);
                     $form.find(".cb-name-input").val(dashboard.name);
-                    $form.find(".cb-period").val('7d');
+                    $form.find(".cb-period").val('14d');
 
                     var i;
                     var $container = $("#cb-dashboard-form .cb-metrics-presentation-container");

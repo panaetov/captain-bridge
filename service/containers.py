@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 import urllib.parse
+import logging
 
 from service import db
 from service.repositories import jira as jira_repositories
@@ -12,6 +13,9 @@ from service.services.planning_actualizer_service import (
     PlanningActualizerService,
 )
 from service.services.run_service import RunService
+
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -100,7 +104,9 @@ async def create(settings):
         ),
     )
 
+    logger.info(f"BASIC_URL = {settings.BASIC_URL}")
     worker_url = urllib.parse.urljoin(settings.BASIC_URL, '/metric/pipeline/run')
+    logger.info(f"WORKER_URL = {worker_url}")
     run_service = RunService(
         db=db.get_db(),
         metrics_repository=metric_repositories_container.metrics,
