@@ -87,7 +87,7 @@ $(function() {
             if (event.target.classList[i] == 'cb-datetime') {
                 return;
             }
-	    }
+        }
         CB.sync_metric_variables(active_block);
     });
 
@@ -152,7 +152,11 @@ $(function() {
     CB.process_http_error = function(jq, status, error) {
         var text = JSON.stringify(jq.responseJSON);
         console.log(`Server error: json=${text}, error=${error}`);
-        CB.show_popup("Request failed", "Server error");
+        if (error == "Forbidden") {
+            CB.show_popup("Forbidden", jq.responseJSON.detail);
+        } else {
+            CB.show_popup("Request failed", text);
+        }
     }
 
     CB.init_timezone_selects = function () {

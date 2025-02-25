@@ -1,5 +1,9 @@
 import os
 
+RO = os.environ.get(
+    "SERVICE_RO", ""
+) == 'true'
+
 DB_DSN = os.environ.get(
     "SERVICE_DB_DSN", ""
 )

@@ -116,7 +116,14 @@ async def get_dashboards_handler(
     }
 
 
-@router.post("/metric/dashboards")
+def _check_ro(request: Request):
+    if request.app.settings.RO:
+        raise HTTPException(status_code=403, detail="Read-only mode. Changes are not allowed.")
+
+
+@router.post(
+    "/metric/dashboards", dependencies=[Depends(_check_ro)],
+)
 async def save_dashboard_handler(
     dashboard: Dashboard,
     dashboard_repository: Annotated[
@@ -277,7 +284,7 @@ async def delete_metrics_handler(
     }
 
 
-@router.post("/metric/metrics")
+@router.post("/metric/metrics", dependencies=[Depends(_check_ro)])
 async def save_metrics_handler(
     metric: Metric,
     metric_repository: Annotated[
@@ -495,7 +502,7 @@ class SaveJiraRequest(pydantic.BaseModel):
     token: str
 
 
-@router.post("/sources/jiras")
+@router.post("/sources/jiras", dependencies=[Depends(_check_ro)])
 async def save_jiras_handler(
     body: SaveJiraRequest,
     jira_repository: Annotated[
@@ -645,7 +652,7 @@ class PlanningContract(pydantic.BaseModel):
 DonePercentContract = DonePercent
 
 
-@router.post("/planning/done_percents")
+@router.post("/planning/done_percents", dependencies=[Depends(_check_ro)])
 async def save_done_percents_handler(
     done_percents: List[DonePercentContract],
     done_percent_repository: Annotated[
@@ -659,7 +666,7 @@ async def save_done_percents_handler(
     return {}
 
 
-@router.post("/planning/plannings")
+@router.post("/planning/plannings", dependencies=[Depends(_check_ro)])
 async def save_planning_handler(
     planning: PlanningContract,
     planning_repository: Annotated[
