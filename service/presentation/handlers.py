@@ -166,7 +166,11 @@ async def get_one_dashboard_handler(
 
     dashboard = dashboards[0]
     metrics = await metric_repository.filter_by_internal_id(dashboard.metrics)
-    dashboard.metrics = [m.internal_id for m in metrics]
+    existing_ids = [m.internal_id for m in metrics]
+    dashboard.metrics = [
+        internal_id for internal_id in dashboard.metrics
+        if internal_id in existing_ids
+    ]
     return _dump_dashboard(dashboards[0])
 
 
