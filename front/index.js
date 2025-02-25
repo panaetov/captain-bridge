@@ -917,7 +917,7 @@ $(function() {
             container.append(select);
 
         } else {
-            var select = $("<select class='tui-input cb-variable-value'></select>");
+            var select = $("<select class='cb-variable-value'></select>");
             container.append(select);
 
             var textarea = $("<textarea class='tui-input cb-variable-options'></textarea>");
@@ -4393,16 +4393,18 @@ $(function() {
         var $form = $(
             "<fieldset draggable='true' class='" + "cb-metric-presentation-block" + "'>" +
             "<legend>" + '' + "</legend>" +
+            "<div class='cb-controls-container'>" +
             "<div class='cb-label'>Metric type:</div> <select " +
             "onchange='CB.apply_metric_type_to_chart(\"" + internal_id + "\")' " +
-            "class=\"tui-input cb-metric-type\">" +    
+            "class=\"tui-input2 cb-metric-type\">" +    
             "<option>table</option>" +
             "<option>timeseries</option>" +
             "</select>" +
-            "<a href='https://github.com/panaetov/captain-bridge/wiki/Dashboards#switching-between-chart-and-table' class='cb-question-mark' target='_blank'>&quest;<a>" +
+            "<a href='https://github.com/panaetov/captain-bridge/wiki/Dashboards#switching-between-chart-and-table' class='cb-question-mark' target='_blank'>&quest;</a>" +
             "<br>" +
 
             "<div class='cb-controls'>" +
+            "</div>" +
             "</div>" +
             "<div class='cb-metric-presentation ui-widget-content' " +
             "internal_id='" + internal_id + "'>" +
@@ -4430,14 +4432,21 @@ $(function() {
                 var legend = fieldset.find('legend');
 
                 var legend_html = (
-                    `<span class='cb-metric-legend-name'><a href='/#metric:${metric.internal_id}' target='_blank'>Metric: "<span class='cb-the-name'>${metric.name}</span>" <img src='/front/images/link.png'></a></span>` + 
+                    `<span class='cb-metric-legend-name'>` +
+                    `<a href='/#metric:${metric.internal_id}' target='_blank'>` +
+                    `Metric: "<span class='cb-the-name'>${metric.name}</span> ` +
+                    `<img src='/front/images/external-link.png'>"</a>` +
+
+                    "<button class='cb-microbutton' onclick='CB.move_metric_up(this);'>&#8593;</button>" + 
+                    "<button class='cb-microbutton' onclick='CB.move_metric_down(this);'>&#8595;</button>" +
+
                     "<button class='tui-button cb-float-right red-168 white-text cb-remove-metric-button' " +
                     `onclick='CB.remove_metric_from_dashboard(this);' ` +
-                    ">Remove</button>" + 
-                    `<button class='cb-edit-metric-button tui-button'><a href='/#metric:${metric.internal_id}' target='_blank'>Edit</a></button>` +
-                    "<button class='cb-microbutton' onclick='CB.move_metric_up(this);'>&#8593;</button>" + 
-                    "<button class='cb-microbutton' onclick='CB.move_metric_down(this);'>&#8595;</button>"
+                    ">X</button>" +
+
+                    `</span>` 
                 );
+                // `<button class='cb-edit-metric-button tui-button'><a href='/#metric:${metric.internal_id}' target='_blank'>Edit</a></button>`
                 legend.html(legend_html);
 
 
@@ -4612,7 +4621,7 @@ $(function() {
                 "</label>" +
                 "<div class='cb-label'>Graphic type:</div><select " +
                 "onchange='CB.apply_options_to_chart(\"" + internal_id + "\")' " +
-                "class=\"tui-input cb-chart-type\">" +    
+                "class=\"tui-input2 cb-chart-type\">" +    
                 "<option>area</option>" +
                 "<option>bar</option>" +
                 "</select><br>" +

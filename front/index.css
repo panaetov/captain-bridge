@@ -100,6 +100,7 @@ input, select, textarea, fieldset {
 
 .cb-metric-presentation-block {
     border: 0;
+    padding: 0;
     //border-top: 1px solid;
 }
 
@@ -109,6 +110,7 @@ input, select, textarea, fieldset {
     height: 500px;
     resize: both;
     overflow: auto;
+    width: 75%;
 }
 
 .cb-table-metric-presentation {
@@ -441,6 +443,8 @@ textarea:focus {
     margin-left: 20px;
     float: right;
     margin-bottom: 0em;
+    width: 10px;
+    min-width: 2em;
 }
 
 td {
@@ -979,16 +983,18 @@ td.cb-employee {
 }
 
 .cb-metric-legend-name {
-	margin: 3em 0 1em 0;
-	font-size: 1.25em;
+	margin: 1em 0 0.5em 0;
+	//font-size: 1.25em;
 	display: block;
 }
 
 
 .cb-metric-legend-name img {
-	height: 1em;
-	background: white;
-	padding: 2px;
+	height: 1.25em;
+	//background: white;
+	//padding: 2px;
+	position: relative;
+    bottom: -6px;
 }
 
 .cb-refresh-metric-button {
@@ -1084,11 +1090,11 @@ td.cb-employee {
 }
 
 .cb-metric-head-section {
-	margin-bottom: 4em;
+	margin-bottom: 0em;
 }
 
 .cb-the-name {
-	text-decoration: underline;
+	text-decoration: none;
 }
 
 .cb-wiki-link {
@@ -1098,4 +1104,25 @@ td.cb-employee {
     border-radius: 1em;
     border: 1px solid #222;
     font-weight: bold;
+}
+
+#cb-dashboard-form .cb-variable input,
+#cb-dashboard-form .cb-variable select
+{
+	margin-bottom: 3px;
+}
+
+.cb-metric-legend-name .cb-microbutton {
+	background: white;
+	border-color: #eee;
+}
+
+.cb-metrics-presentation-container .cb-controls {
+	//width: 24%;
+	//float: right;
+}
+
+.cb-metrics-presentation-container .cb-controls-container {
+	width: 24%;
+	float: right;
 }
