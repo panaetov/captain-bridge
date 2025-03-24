@@ -247,6 +247,13 @@ input, select, textarea, fieldset {
     color: black;
     float: right;
     margin-left: 1em;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+#cb-add-new-metric-popup button a {
+	display: block;
+	width: 100%;
 }
 
 #cb-popup {
