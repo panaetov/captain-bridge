@@ -200,6 +200,7 @@ $(function() {
         }
 
         location.hash = "jiras";
+		CB.set_active_menu("#cb-sources-menu");
 
         CB.hide_all_innerblocks();
         var $panel = $("#cb-jiras-table");
@@ -1141,6 +1142,7 @@ $(function() {
                 CB.show_popup('OK', 'Metric is saved');
                 $form.find(".cb-internal-id-input").val(result.internal_id);
                 location.hash = `metric:${result.internal_id || ''}`;
+				CB.set_active_menu("#cb-metrics-menu");
             },
             error: CB.process_http_error
         });
@@ -2231,7 +2233,7 @@ $(function() {
             "</div>" +
             "<div class='content'>" +
             `    <div id='cb-stage-results-result-${tabs_counter}' class='tui-tab-content'> ` +
-            "        <table class='tui-table hovered-cyan width-100 cb-stage-results'><tbody><tr><td class='cb-black'>No results yet...</td></tr></tbody></table>" +
+            "        <table class='tui-table hovered-cyan width-100 cb-stage-results'><tbody><tr><td>No results yet...</td></tr></tbody></table>" +
             "    </div>" +
             `    <div id='cb-stage-results-logs-${tabs_counter}' class='tui-tab-content width-100 cb-stage-logs'>` +
             "No logs yet...</div>" +
@@ -2512,6 +2514,7 @@ $(function() {
                 CB.show_popup('OK', 'Source is saved');
                 CB.render_jira_form(result.internal_id);
                 location.hash = `jira:${result.internal_id || ''}`;
+				CB.set_active_menu("#cb-sources-menu");
             },
             error: CB.process_http_error
         });
@@ -2605,6 +2608,7 @@ $(function() {
         }
 
         location.hash = `jira:${internal_id || ''}`;
+		CB.set_active_menu("#cb-sources-menu");
 
         var $form = $("#cb-jira-form");
         var $legend = $("#cb-jira-form > legend");
@@ -2864,6 +2868,7 @@ $(function() {
                 CB.show_popup('OK', 'Planning is saved');
                 $form.find(".cb-internal-id-input").val(result.internal_id);
                 location.hash = `planning:${result.internal_id || ''}`;
+				CB.set_active_menu("#cb-plannings-menu");
 
                 var key, payload = [];
                 for(issue_internal_id in self.done_percents) {
@@ -3976,6 +3981,7 @@ $(function() {
         }
 
         location.hash = "plannings";
+		CB.set_active_menu("#cb-plannings-menu");
 
         CB.hide_all_innerblocks();
         var $panel = $("#cb-plannings-table");
@@ -4015,6 +4021,7 @@ $(function() {
         }
 
         location.hash = `planning:${internal_id || ''}`;
+		CB.set_active_menu("#cb-plannings-menu");
 
         var $form = $("#cb-planning-form");
         var $legend = $("#cb-planning-form > legend");
@@ -4113,6 +4120,7 @@ $(function() {
         }
 
         location.hash = `metric:${internal_id || ''}`;
+		CB.set_active_menu("#cb-metrics-menu");
 
         var $form = $("#cb-metric-form");
         var $legend = $("#cb-metric-form > legend");
@@ -4193,6 +4201,7 @@ $(function() {
         }
 
         location.hash = "metrics";
+		CB.set_active_menu("#cb-metrics-menu");
 
         if (root && escaped) {
             root = unescape(root);
@@ -4336,7 +4345,7 @@ $(function() {
         CB._FORM_CLEAN = false;
 
         var popup = $("#cb-add-new-metric-popup");
-        popup.find(".tui-panel-header").html("Choose metric");
+        popup.find(".tui-panel-header").html("Choose query");
 
         var $table = popup.find('.cb-metrics-table');
         CB.add_controls_to_table($table);
@@ -4585,6 +4594,7 @@ $(function() {
                 CB._FORM_CLEAN = true;
                 $form.find(".cb-internal-id-input").val(result.internal_id);
                 location.hash = `dashboard:${result.internal_id || ''}`;
+				CB.set_active_menu("#cb-dashboards-menu");
             },
             error: CB.process_http_error
         });
@@ -4614,11 +4624,11 @@ $(function() {
         if (metric_type == 'timeseries') {
 
             $controls.append($(
-                "<label class=\"tui-checkbox\">&nbspStack data" +
+                "<label class=\"tui-checkbox2\">Stack data:</label><br>" +
                 "<input type=\"checkbox\" class='cb-stack-data'" +
                 "onchange='CB.apply_options_to_chart(\"" + internal_id + "\")'/>" +
                 "<span></span>" +
-                "</label>" +
+                "" +
                 "<div class='cb-label'>Graphic type:</div><select " +
                 "onchange='CB.apply_options_to_chart(\"" + internal_id + "\")' " +
                 "class=\"tui-input2 cb-chart-type\">" +    
@@ -4752,6 +4762,7 @@ $(function() {
         }
 
         location.hash = `dashboard:${internal_id || ''}`;
+		CB.set_active_menu("#cb-dashboards-menu");
 
         CB.hide_all_innerblocks();
         var $panel = $("#cb-dashboards-table");
@@ -4821,6 +4832,7 @@ $(function() {
         }
 
         location.hash = "dashboards";
+		CB.set_active_menu("#cb-dashboards-menu");
 
         CB._DASHBOARDS_ROOT = root;
         CB.hide_all_innerblocks();
@@ -4892,6 +4904,11 @@ $(function() {
         $("#cb-mainblock").hide();
         $("#cb-readme").show(100);
     }
+
+	CB.set_active_menu = function(menu_id) {
+		$(".cb-header-item").removeClass("active");
+		$(menu_id).addClass("active");
+	}
 
 
     CB.generate_timeseries_format_error = function() {

@@ -43,20 +43,27 @@
                 <ul>
                     <li class='cb-header-item'><a class="inline logo"> #CAPTAIN_BRIDGE</a></li>
 
-                    <li class='cb-header-item'><a href='/#dashboards'
+                    <li class='cb-header-item' id='cb-dashboards-menu'><a href='/#dashboards'
                         onclick="CB.render_dashboards_table();"
-                        class="white-255-hover black-text-hover cursor-pointer inline">Dashboards</a></li>
+                        class="cursor-pointer inline">Dashboards</a></li>
 
-                    <li class='cb-header-item'><a href='/#metrics'
-                        onclick="CB.render_metrics_table();"
-                        class="white-255-hover black-text-hover cursor-pointer inline">Metrics</a></li>
-
-                    <li class='cb-header-item'><a
+                    <li class='cb-header-item' id='cb-plannings-menu'><a
                         onclick="CB.render_plannings_table();"
-                        class="white-255-hover black-text-hover cursor-pointer inline">Planning</a></li>
+                        class="cursor-pointer inline">Plannings</a></li>
 
-                    <li class='cb-dropdown cb-header-item'>
-                        <a class="white-255-hover black-text-hover cursor-pointer inline">Data sources &#9776;</a>
+
+                    <li class='cb-header-item cb-float-right' id='cb-readme-menu'>
+                        <a class="white-255-hover black-text-hover cursor-pointer inline"
+                           target='_blank'
+                           href="https://github.com/panaetov/captain-bridge/wiki/Getting-started"
+                        >
+                        README
+                        </a>
+                    </li>
+
+
+                    <li class='cb-dropdown cb-header-item cb-float-right' id='cb-sources-menu'>
+                        <a class="cursor-pointer inline">Data sources &#9776;</a>
                         <div class="cb-dropdown-content">
                             <a href='/#jiras' onclick="CB.render_jiras_table();">JIRA</a>
                             <a href="#">GITLAB</a>
@@ -64,14 +71,12 @@
                         </div>
                     </li>
 
-                    <li class='cb-header-item'>
-                        <a class="white-255-hover black-text-hover cursor-pointer inline"
-                           href='/#readme'
-							onclick="CB.render_readme();"
-                        >
-                        README
-                        </a>
-                    </li>
+                    <li class='cb-header-item cb-float-right' id='cb-metrics-menu'><a href='/#metrics'
+                        onclick="CB.render_metrics_table();"
+                        class="cursor-pointer inline">Query constructor</a></li>
+
+
+
 
                 </ul>
             </fieldset>
@@ -162,7 +167,7 @@
             </fieldset>
 
             <fieldset class="tui-fieldset cb-innerblock" id='cb-metrics-table'>
-                <legend class="center">Metrics</legend>
+                <legend class="center">Queries</legend>
                 <span class="tui-fieldset-button left"><span class="green-255-text">■</span></span>    
                 <span class="tui-fieldset-text" style="margin-left: 50px;">&nbsp;1:1&nbsp;</span>    
 
@@ -419,7 +424,7 @@
                 </div>
 
                 <br>
-                Internal ID.......: <input class='cb-internal-id-input disabled tui-input' disabled class="tui-input" value="" /><br>
+                <input class='cb-invisible cb-internal-id-input disabled tui-input' disabled class="tui-input" value="" /><br>
                 Name..............: <input class='cb-name-input tui-input' value="" /><br>
 
                 <!--
@@ -434,9 +439,6 @@
                 <div class="cb-stages-list">
                 <!--<h1>Pipeline</h1>-->
 
-                    Terminal stage....: <select class='cb-terminal-stage-input tui-input' value="">
-                    </select>
-                    <br>
 
                 <div id="cb-metric-variables-list">
                 <h1 class='cb-subtitle'>Variables</h1>
@@ -445,6 +447,7 @@
                     onclick="CB.add_metric_variable_onclick()"
                     >[+] Add variable</button>    
                 <br>
+
 
 
                 <table class='cb-variables-table'>
@@ -475,10 +478,15 @@
 
                 </div>
 
+
                 <h1 class='cb-subtitle'>Stages</h1>
                     <button class="tui-button"
                         onclick="CB.add_new_metric_stage_onclick()"
                         >[+] Add stage</button>    
+                    <br>
+
+                    Terminal stage: <select class='cb-terminal-stage-input tui-input' value="">
+                    </select>
                     <br>
             <div class="tui-panel cb-stage-tabs" style="width: 100%;">    
             <div class="tui-tabs cb-tabs-header">    
@@ -537,7 +545,7 @@
 
                 <button class="tui-button"
                     onclick="CB.add_new_metric_to_dashboard()"
-                    >[+]Add metric</button>    
+                    >[+] Add query</button>    
 
                 <div class='cb-metrics-presentation-container'></div>
             </fieldset>
@@ -704,20 +712,26 @@
             </div>    
             <div class="tui-panel-content">    
                 <span class='cb-popup-text'>
-                   <table class="tui-table hovered-cyan width-100 cb-metrics-table">
-                       <thead>
-                           <tr>
-                               <th>Name</th>
-                           </tr>
-                       </thead>
-                       <tbody>
-                       </tbody>
-                   </table>
+                    <button class="tui-button white-255" style="width: 80px"
+                        onclick='CB.close_popup(this);'>[X] Close</button>    
+
+                	<button class="tui-button white-255-text">
+                	    <a href='/#metric:' target='_blank'>
+                			Create new query
+                		</a>
+                	</button>    
+                    <table class="tui-table hovered-cyan width-100 cb-metrics-table">
+                        <thead>
+                            <tr>
+                                <th>Search by name</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
                 </span>
                 <br><br>    
                 <div class="center">    
-                    <button class="tui-button white-255" style="width: 80px"
-                        onclick='CB.close_popup(this);'>[X] Close</button>    
                 </div>    
             </div>    
         </div>    

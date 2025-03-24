@@ -95,7 +95,7 @@ input, select, textarea, fieldset {
 }
 
 .cb-name-input {
-	width: 50em;
+    width: 50em;
 }
 
 .cb-metric-presentation-block {
@@ -162,10 +162,10 @@ input, select, textarea, fieldset {
 }
 
 .cb-input-group {
-    //border: 4px outset #eee;
+    border-left: 1px solid #eee;
     margin-bottom: 1em;
     padding: 0.5em;
-    background: black;
+    //background: black;
     color: white;
     
 }
@@ -199,12 +199,13 @@ input, select, textarea, fieldset {
 }
 
 .cb-action-pipeline {
-    min-width: 700px;
-    min-height: 300px;
+    width: 100%;
+    height: 250px;
+    margin-top: 10px;
 }
 
 .cb-stage-tabs .content {
-    border: 3px outset white;
+    border: 1px outset white;
 }
 
 .cb-delete-stage {
@@ -233,6 +234,8 @@ input, select, textarea, fieldset {
     left: 25%;
     right: 25%;
     text-align: center;
+    max-height: 500px;
+    overflow-y: auto;
 }
 
 #cb-add-new-metric-popup td {
@@ -242,6 +245,8 @@ input, select, textarea, fieldset {
 
 #cb-add-new-metric-popup button {
     color: black;
+    float: right;
+    margin-left: 1em;
 }
 
 #cb-popup {
@@ -346,8 +351,8 @@ textarea:focus {
 .cb-dropdown-content {
     display: none;
     position: absolute;
-    background: #0000a8;
-    border: 6px double white;
+    background: #000088;
+    border: 1px solid white;
     padding: 10px;
     z-index: 1;
     border-top: 0;
@@ -356,6 +361,7 @@ textarea:focus {
 
 .cb-dropdown-content a {
     margin-top: 0.5em;
+    color: white;
 }
 
 .cb-dropdown-content a:hover {
@@ -370,7 +376,7 @@ textarea:focus {
 .cb-header-item {
     width: 200px;
     text-align: center;
-    margin-right: 0px;
+    margin-right: 1em;
 }
 
 .cb-textarea-label {
@@ -567,7 +573,8 @@ body {
 }
 
 .cb-variable input:disabled {
-    background: #0000a8;
+    background: #000088;
+    color: white;
 }
 
 .cb-variable-options {
@@ -785,7 +792,7 @@ button.cb-down {
 }
 
 .cb-done {
-	float: left;
+    float: left;
     width: 4em !important;
     min-width: 0;
 }
@@ -799,10 +806,8 @@ button.cb-down {
 }
 
 #cb-planning-form .cb-select2-inputs .select2-selection {
-    background: #000;
 }
 #cb-planning-form .cb-select2-inputs .select2-selection__rendered {
-    color: white;
 }
 
 #cb-planning-form .cb-select2-inputs .select2-container {
@@ -898,7 +903,7 @@ td.cb-employee {
 
 #cb-readme .row {
     border: 4px double #ffffff;
-    background: #0000a8;
+    background: #000088;
 }
 
 .cb-index-status {
@@ -906,17 +911,13 @@ td.cb-employee {
 }
 
 .cb-variables-table td {
-    border: 1px solid;
     //padding: 1em 0.5em;
-    background: #e2e2e2;
-    color: black;
+    color: white;
 }
 
 .cb-variables-table td input, .cb-variables-table td select {
     width: 100%;
-    background: black;
     margin: 0;
-    color: white;
 }
 
 .cb-subtitle {
@@ -931,86 +932,85 @@ td.cb-employee {
 
 
 .cb-variables-table td.cb-delete-button-container {
-	width: 1em;
+    width: 1em;
 }
 
 .cb-debug-title {
-	font-weight: bold;
-	font-size: 1.4em;
-	border-bottom: 1px solid;
-	margin: 1em 0;
+    font-weight: bold;
+    font-size: 1.4em;
+    border-bottom: 1px solid;
+    margin: 1em 0;
 }
 
 
 .cb-stage-tabs {
-	box-shadow: none;
+    box-shadow: none;
 }
 
 .cb-stage-results-tabs {
-	box-shadow: none;
-	background: #e2e2e2;
-	color: black;
+    box-shadow: none;
+    background: #e2e2e2;
+    //color: black;
 }
 
 .cb-black {
-	color: black;
+    color: black;
 }
 
 
 .cb-variables-table th {
-	color: #ff0;
+    color: #ff0;
 }
 
 .cb-stage-results tbody {
-	color: black;
 }
 
 .cb-stage-results thead {
-	color: black;
+    color: black;
 }
 
 .cb-float-right {
-	float: right;
+    float: right;
 }
 
 .cb-metric-presentation-block legend {
-	width: 100%;
+    width: 100%;
 }
 
 .cb-divider {
-	margin-top: 2em;
-	font-size:1.25em;
+    margin-top: 2em;
+    font-size:1.25em;
 }
 
 .cb-metric-legend-name {
-	margin: 1em 0 0.5em 0;
-	//font-size: 1.25em;
-	display: block;
+    margin: 1em 0 0.5em 0;
+    //font-size: 1.25em;
+    display: block;
 }
 
 
 .cb-metric-legend-name img {
-	height: 1.25em;
-	//background: white;
-	//padding: 2px;
-	position: relative;
+    height: 1.25em;
+    //background: white;
+    //padding: 2px;
+    position: relative;
     bottom: -6px;
 }
 
 .cb-refresh-metric-button {
-	margin-right: 1em;
+    margin-right: 1em;
 }
 
 #cb-change-velocity-metric-link {
-	width: 10em;
+    width: 10em;
     display: inline-block;
     min-width: 10em;
     position: relative;
     top: -7px;
 }
 #cb-change-velocity-metric-link a {
-	display: inline-block;
-	width: 100%;
+    display: inline-block;
+    width: 100%;
 }
 
 #cb-reread-velocity-metric-button {
@@ -1026,14 +1026,14 @@ td.cb-employee {
     background: red;
     padding: 2px 10px;
     /margin-left: 1em;
-    color: white;	
-	font-weight: bold;
-	margin-left: 1em;
+    color: white;    
+    font-weight: bold;
+    margin-left: 1em;
 }
 
 .cb-has-overdue {
-	color: red;
-	font-weight: bold;
+    color: red;
+    font-weight: bold;
 }
 
 .cb-tooltip {
@@ -1067,38 +1067,38 @@ td.cb-employee {
 }
 
 .cb-confirm-changes-sign {
-	# background: white;
-	# color: red;
-	# border: 2px solid red;
-	# font-size: 3em;
-	margin-bottom: 1em;
+    # background: white;
+    # color: red;
+    # border: 2px solid red;
+    # font-size: 3em;
+    margin-bottom: 1em;
 }
 
 #cb-confirm-saving-popup {
-	font-size: 1.2em;
+    font-size: 1.2em;
 }
 
 .cb-confirm-bold {
-	font-weight: bold;
-	background: #ff0;
+    font-weight: bold;
+    background: #ff0;
 }
 
 .cb-confirm-changes-sign img {
-	border: 10px double;
-	height: 10em;
-	background: white;
+    border: 10px double;
+    height: 10em;
+    background: white;
 }
 
 .cb-metric-head-section {
-	margin-bottom: 0em;
+    margin-bottom: 0em;
 }
 
 .cb-the-name {
-	text-decoration: none;
+    text-decoration: none;
 }
 
 .cb-wiki-link {
-	background: #eee;
+    background: #eee;
     color: #000;
     padding: 0 1em;
     border-radius: 1em;
@@ -1109,20 +1109,92 @@ td.cb-employee {
 #cb-dashboard-form .cb-variable input,
 #cb-dashboard-form .cb-variable select
 {
-	margin-bottom: 3px;
+    margin-bottom: 3px;
 }
 
 .cb-metric-legend-name .cb-microbutton {
-	background: white;
-	border-color: #eee;
+    background: white;
+    border-color: #eee;
 }
 
 .cb-metrics-presentation-container .cb-controls {
-	//width: 24%;
-	//float: right;
+    //width: 24%;
+    //float: right;
 }
 
 .cb-metrics-presentation-container .cb-controls-container {
-	width: 24%;
-	float: right;
+    width: 24%;
+    float: right;
+}
+
+#cb-readme-menu {
+    float: right;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0.0;
+  }
+}
+
+.cb-blink {
+  animation: blink 1s step-start 0s infinite;
+}
+
+#cb-metrics-menu {
+    border-bottom: 3px double;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.active {
+    background: #e2e2e2;
+    color: black;
+    border: 3px inset;
+}
+
+.tui-fieldset {
+    border: 1px solid;
+}
+
+.tui-fieldset-button {
+    display: none;
+}
+
+legend {
+    display: none;
+}
+
+.cb-action-code {
+    width: 100%;
+    height: 250px;
+    margin-top: 10px;
+}
+
+.tui-window {
+    display: block;
+    padding: 0;
+    background-color: #000088;
+}
+
+.tui-tabs {
+    background-color: #000088;
+}
+
+.cb-stack-data {
+    min-width: 0;
+    width: 1em;
+}
+
+.tui-table {
+    border: 0px;
+}
+
+.tui-input {
+    color: black;
+    background: white;
+}
+
+.tui-panel {
+    background: #000088;
 }
