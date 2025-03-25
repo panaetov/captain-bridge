@@ -28,7 +28,10 @@ body {
 
 .cb-innerblock {
     display: none;
-    margin-bottom: 2em;
+}
+
+.cb-innerblock >.tui-fieldset-text {
+	display: none;
 }
 
 #cb-helloworld-spok {
@@ -1203,4 +1206,8 @@ legend {
 
 .tui-panel {
     background: #000088;
+}
+
+.cb-innerblock >legend {
+	display: none;
 }
