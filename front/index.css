@@ -273,8 +273,6 @@ input, select, textarea, fieldset {
 }
 
 textarea:focus {
-    background: black;
-    color: white;
 }
 
 #cb-metric-form-errors {
@@ -592,8 +590,8 @@ body {
 }
 
 .tui-input:focus {
-    background-color: rgb(0, 0, 0)!important;
-    color: white!important;
+	background-color: #fff !important;
+    color: black !important;
 }
 
 #cb-dashboard-variable-options textarea {
@@ -976,7 +974,6 @@ td.cb-employee {
 }
 
 .cb-stage-results thead {
-    color: black;
 }
 
 .cb-float-right {
