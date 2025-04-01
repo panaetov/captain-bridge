@@ -202,9 +202,6 @@ input, select, textarea, fieldset {
 }
 
 .cb-action-pipeline {
-    width: 100%;
-    height: 250px;
-    margin-top: 10px;
 }
 
 .cb-stage-tabs .content {
@@ -1172,9 +1169,6 @@ legend {
 }
 
 .cb-action-code {
-    width: 100%;
-    height: 250px;
-    margin-top: 10px;
 }
 
 .tui-window {

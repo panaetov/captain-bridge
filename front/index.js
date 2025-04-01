@@ -262,6 +262,14 @@ $(function() {
         $this.addClass('active');
         var content_id = $this.attr('data-tab-content');
         $("#" + content_id).show();
+
+        var editors = $("#" + content_id).find('.cb-action-value');
+        if(editors.length) {
+            var editor = editors[0];
+            if (editor.value) {
+                editor.value = editor.value;
+            }
+        }
     }
 
 
@@ -537,10 +545,8 @@ $(function() {
             $details.append(
                 "<span class='cb-float-left'>Pipeline............:&nbsp</span>"
             );
-            $pipeline = $(
-                "<textarea class='tui-input cb-action-value cb-action-pipeline'></textarea>"
-            );
-            $pipeline.val(JSON.stringify(
+
+            var source = JSON.stringify(
                 stage.action.pipeline || [{
                     "$match": {
                         "created": {
@@ -549,7 +555,21 @@ $(function() {
                         }
                     }
                 }], null, 4
-            ));
+            );
+            $pipeline = $(
+                "<wc-codemirror class='cb-action-value cb-action-pipeline' mode='javascript' >" +
+                "<script type='wc-content'>" +
+                source +
+                "</script>" +
+                "</wc-codemirror>"
+            );
+            pipeline = $pipeline[0];
+
+            try {
+                $pipeline[0].connectedCallback();
+            } catch (error) {
+            }
+            pipeline.value = source;
             $details.append($pipeline);
         }
 
@@ -568,15 +588,19 @@ $(function() {
             $details.append(
                 "<span class='cb-float-left'>Code................:&nbsp</span>"
             );
+            var source = stage.action.code || "print(INPUTS)\n\nreturn []";
             $pipeline = $(
-                "<textarea class='tui-input cb-action-value cb-action-code'></textarea>"
+                "<wc-codemirror class='cb-action-value cb-action-code' mode='python' >" +
+                "<script type='wc-content'>" +
+                "\n" +
+                source +
+                "\n" +
+                "</script>" +
+                "</wc-codemirror>"
             );
-            $pipeline.val(
-                stage.action.code
-            );
+            $pipeline[0].connectedCallback();
             $details.append($pipeline);
         }
-
     }
 
     CB.delete_input_on_click = function(button) {
@@ -611,7 +635,7 @@ $(function() {
 
     CB.parse_metric_stage = function($stage_form) {
         var name = $stage_form.find('.cb-stage-name-input').val();
-        
+
         var terminal_name = $stage_form.parents(".cb-stages-list").find('.cb-terminal-stage-input').val();
         var is_terminal = (name == terminal_name);
 
@@ -635,11 +659,20 @@ $(function() {
             })
         }
 
+        function get_code(klass, default_value) {
+            var inputs = $stage_form.find(klass);
+            if (inputs.length) {
+                return inputs[0].value;
+            } else {
+                return default_value;
+            }
+        }
+
         var action = {
-            pipeline: JSON.parse($stage_form.find('.cb-action-pipeline').val() || '[]'),
+            pipeline: JSON.parse(get_code('.cb-action-pipeline', '[]')),
             action_type: $stage_form.find('.cb-action-type-input').val(),
             url: $stage_form.find('.cb-action-url').val(),
-            code: $stage_form.find('.cb-action-code').val()
+            code: get_code('.cb-action-code', '')
         }
 
         return {
