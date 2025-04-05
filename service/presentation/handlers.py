@@ -17,9 +17,11 @@ from pytimeparse import parse as parse_interval
 
 from service import utils
 from service.entities.jira import Jira, Project
+from service.entities.redmine import Redmine, Issue as RedmineIssue
 from service.entities.metric import Dashboard, Metric, Stage
 from service.entities.planning import DonePercent, Planning
 from service.repositories import jira as jira_repositories
+from service.repositories import redmine as redmine_repositories
 from service.repositories.metrics import DashboardRepository, MetricRepository
 from service.repositories.plannings import (
     DayOffRepository,
@@ -29,6 +31,7 @@ from service.repositories.plannings import (
 )
 from service.services.dry_run_service import DryRunService
 from service.services.jira_index_service import JiraIndexService
+from service.services.redmine_index_service import RedmineIndexService
 from service.services.run_service import RunService
 
 logger = logging.getLogger(__name__)
@@ -418,6 +421,10 @@ def _get_jira_repository(request: Request):
     return request.app.container.jira_repositories.jiras
 
 
+def _get_redmine_repository(request: Request):
+    return request.app.container.redmine_repositories.redmines
+
+
 def _get_project_repository(request: Request):
     return request.app.container.jira_repositories.projects
 
@@ -433,7 +440,7 @@ def _dump_jira(jira: Jira, projects=None):
         "name": jira.name,
         "url": jira.url,
         "login": jira.login,
-        "password": "*********",
+        "password": PASSWORD_NOT_CHANGED,
         "projects": [p.key for p in projects],
         "indexed_at": jira.indexed_at,
         "index_period": jira.index_period,
@@ -441,7 +448,7 @@ def _dump_jira(jira: Jira, projects=None):
         "status": jira.status,
         "custom_fields": jira.custom_fields,
         "auth_method": jira.auth_method,
-        "token": jira.token,
+        "token": PASSWORD_NOT_CHANGED,
     }
 
 
@@ -481,7 +488,7 @@ async def get_one_jira_handler(
     return _dump_jira(jiras[0], projects)
 
 
-@router.delete("/sources/jiras/{internal_id}")
+@router.delete("/sources/jiras/{internal_id}", dependencies=[Depends(_check_ro)])
 async def delete_jira_handler(
     jira_repository: Annotated[
         jira_repositories.JiraRepository, Depends(_get_jira_repository)
@@ -524,7 +531,7 @@ async def save_jiras_handler(
         password=body.password if body.password != PASSWORD_NOT_CHANGED else "",
         custom_fields=body.custom_fields,
         auth_method=body.auth_method,
-        token=body.token,
+        token=body.token if body.token != PASSWORD_NOT_CHANGED else "",
     )
     if not data["internal_id"]:
         data.pop("internal_id")
@@ -983,3 +990,139 @@ async def planing_calendar_handler(
         "months": months,
         "days": days,
     }
+
+
+def _dump_redmine(redmine: Redmine):
+    return {
+        "internal_id": redmine.internal_id,
+        "name": redmine.name,
+        "url": redmine.url,
+        "auth_method": redmine.auth_method,
+        "token": PASSWORD_NOT_CHANGED,
+        "login": redmine.login,
+        "password": PASSWORD_NOT_CHANGED,
+        "projects": redmine.projects,
+        "indexed_at": redmine.indexed_at,
+        "index_period": redmine.index_period,
+        "logs": redmine.logs,
+        "status": redmine.status,
+    }
+
+
+@router.get("/sources/redmines")
+async def get_redmines_handler(
+    redmine_repository: Annotated[
+        redmine_repositories.RedmineRepository, Depends(_get_redmine_repository)
+    ],
+):
+    redmines = await redmine_repository.all()
+
+    return [_dump_redmine(d) for d in redmines]
+
+
+@router.get("/sources/redmines/{internal_id}")
+async def get_one_redmine_handler(
+    redmine_repository: Annotated[
+        redmine_repositories.RedmineRepository, Depends(_get_redmine_repository)
+    ],
+    internal_id: str,
+):
+    redmines = await redmine_repository.filter_by_internal_id(
+        [
+            internal_id,
+        ]
+    )
+
+    if not redmines:
+        raise HTTPException(status_code=404)
+
+    return _dump_redmine(redmines[0])
+
+
+@router.delete("/sources/redmines/{internal_id}", dependencies=[Depends(_check_ro)])
+async def delete_redmine_handler(
+    redmine_repository: Annotated[
+        redmine_repositories.RedmineRepository, Depends(_get_redmine_repository)
+    ],
+    internal_id: str,
+):
+    await redmine_repository.delete_by_internal_id(internal_id)
+    return {
+        "internal_id": internal_id,
+    }
+
+
+class SaveRedmineRequest(pydantic.BaseModel):
+    internal_id: str | None = None
+    name: str
+    url: str
+    projects: List[str]
+    auth_method: str
+    token: str
+    login: str
+    password: str
+
+
+@router.post("/sources/redmines", dependencies=[Depends(_check_ro)])
+async def save_redmines_handler(
+    body: SaveRedmineRequest,
+    redmine_repository: Annotated[
+        redmine_repositories.RedmineRepository, Depends(_get_redmine_repository)
+    ],
+):
+    data = dict(
+        internal_id=body.internal_id,
+        name=body.name,
+        url=body.url,
+        login=body.login,
+        password=body.password if body.password != PASSWORD_NOT_CHANGED else "",
+        auth_method=body.auth_method,
+        token=body.token if body.token != PASSWORD_NOT_CHANGED else "",
+        projects=body.projects,
+    )
+    if not data["internal_id"]:
+        data.pop("internal_id")
+
+    redmine = Redmine(**data)
+
+    await redmine_repository.save(redmine)
+
+    return {
+        "internal_id": redmine.internal_id,
+    }
+
+
+def _get_redmine_index_service(websocket: WebSocket):
+    return websocket.app.container.redmine_index_service
+
+
+@router.websocket("/sources/redmines/indexify")
+async def redmine_websocket_endpoint(
+    websocket: WebSocket,
+    index_service: Annotated[
+        RedmineIndexService, Depends(_get_redmine_index_service)
+    ],
+):
+    await websocket.accept()
+    while True:
+        message = await websocket.receive_text()
+        redmine_internal_id, mode = message.split("_")
+
+        async def report_results(message, level):
+            await websocket.send_text(
+                utils.serialize_json(
+                    {
+                        "created_at": datetime.datetime.utcnow(),
+                        "level": level,
+                        "message": message,
+                    }
+                )
+            )
+
+        await index_service.indexify(
+            redmine_internal_id=redmine_internal_id,
+            watcher_callback=report_results,
+            full=mode == "full",
+        )
+        await websocket.close()
+        break

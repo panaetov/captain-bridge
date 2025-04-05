@@ -25,6 +25,9 @@ class JiraRepository(Repository):
         if not fields["password"]:
             fields.pop("password")
 
+        if not fields["token"]:
+            fields.pop("token")
+
         fields.pop("logs")
         fields.pop("indexed_at")
 
@@ -74,13 +77,6 @@ class JiraRepository(Repository):
                 },
             },
         ]
-
-        if limit is not None:
-            pipeline.append(
-                {
-                    "$limit": limit,
-                }
-            )
 
         return pipeline
 
