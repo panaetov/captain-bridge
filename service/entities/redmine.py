@@ -46,9 +46,9 @@ class Issue(BaseModel):
     redmine: Redmine
 
     id: str
-    created_at: datetime.datetime
-    updated_at: datetime.datetime
-    
+    created: datetime.datetime
+    updated: datetime.datetime
+
     started_at: datetime.datetime | None
     closed_at: datetime.datetime | None
 

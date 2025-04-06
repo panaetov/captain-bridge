@@ -151,7 +151,21 @@ class Worker:
         return result
 
     async def indexify_issues(self, redmine, service, project_ref):
-        issue_refs = await service.get_issues(project_ref)
+        max_updated = None
+
+        if not self.full:
+            max_updated = await self.launcher.issue_repository.get_max_updated(
+                redmine.internal_id,
+                project_ref.id,
+            )
+
+        if not max_updated:
+            max_updated = datetime.datetime.utcnow() - datetime.timedelta(
+                days=90
+            )
+
+        self.logger.info(f"Fetching issues updated after {max_updated.isoformat()}.")
+        issue_refs = await service.get_updated_issues(project_ref, max_updated)
         try:
             custom_field_specs = await service.get_issue_custom_fields()
         except service.ForbiddenError as e:
@@ -169,8 +183,8 @@ class Worker:
 
             issue = Issue(
                 id=str(issue_ref.id),
-                created_at=issue_ref.created_on,
-                updated_at=issue_ref.updated_on,
+                created=issue_ref.created_on,
+                updated=issue_ref.updated_on,
 
                 assigned_to={
                     'id': str(assigned_to.id),

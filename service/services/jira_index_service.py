@@ -187,6 +187,7 @@ class Worker:
 
         if not self.full:
             max_updated = await self.launcher.issues_repository.get_max_updated(
+                self.jira_internal_id,
                 project.key,
             )
 

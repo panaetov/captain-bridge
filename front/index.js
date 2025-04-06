@@ -680,12 +680,20 @@ $(function() {
             );
             $collection_name = $(
             "<select class='tui-input cb-input-collection-name-input' >" +
-            "<option>datasource_jira_issues_public</option>" +
-            "<option>datasource_jira_sprints_public</option>" +
-            "</select><br>"
+            "<option value='datasource_jira_issues_public'>Jira issues</option>" +
+            "<option value='datasource_jira_sprints_public'>Jira sprints</option>" +
+            "<option value='datasource_redmine_issues_public'>Redmine issues</option>" +
+            "</select>"
             );
             $collection_name.val(stage_input.collection_name || '');
             $details.append($collection_name);
+
+            $docs = $(
+                "<a class='cb-input-collection-doc' target='_blank' href='https://google.com'>?</a>"
+            );
+            $docs.attr("href", "https://github.com/panaetov/captain-bridge/wiki/Indexed-Data")
+            $details.append($docs);
+            $details.append('<br>');
         }
 
         if ($type.val() == 'stage') {

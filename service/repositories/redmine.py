@@ -99,17 +99,18 @@ class IssueRepository(Repository):
             "id": issue.id,
         }
 
-    async def get_max_updated(self, project_key):
+    async def get_max_updated(self, redmine_internal_id, project_id):
         cursor = self.get_table().aggregate(
             [
                 {
                     "$match": {
-                        "project": project_key,
+                        "project.id": str(project_id),
+                        "redmine_internal_id": redmine_internal_id,
                     },
                 },
                 {
                     "$group": {
-                        "_id": "$project",
+                        "_id": "$project.id",
                         "max_updated": {"$max": "$updated"},
                     }
                 },

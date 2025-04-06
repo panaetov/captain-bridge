@@ -31,7 +31,7 @@ body {
 }
 
 .cb-innerblock >.tui-fieldset-text {
-	display: none;
+    display: none;
 }
 
 #cb-helloworld-spok {
@@ -251,8 +251,8 @@ input, select, textarea, fieldset {
 }
 
 #cb-add-new-metric-popup button a {
-	display: block;
-	width: 100%;
+    display: block;
+    width: 100%;
 }
 
 #cb-popup {
@@ -612,7 +612,7 @@ body {
 }
 
 .tui-input:focus {
-	background-color: #fff !important;
+    background-color: #fff !important;
     color: black !important;
 }
 
@@ -1225,14 +1225,22 @@ legend {
 }
 
 .cb-innerblock >legend {
-	font-size: 1em;
+    font-size: 1em;
 }
 
 .cb-header-icon {
-	height: 1.2em;
+    height: 1.2em;
 }
 
 .cb-header-link {
-	padding: 0 25%;
-	text-align: left;
+    padding: 0 25%;
+    text-align: left;
+}
+
+.cb-input-collection-doc {
+    margin: 0 7px;
+    background: white;
+    color: black;
+    padding: 0 4px;
+    border: 3px red solid;
 }

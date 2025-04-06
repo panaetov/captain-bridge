@@ -34,8 +34,11 @@ class RedmineService:
         )
         return project
 
-    async def get_issues(self, project_ref):
-        return project_ref.issues
+    async def get_updated_issues(self, project_ref, min_updated_at):
+        return self.redmine.issue.filter(
+            updated_on=f">={min_updated_at.strftime('%Y-%m-%dT%H:%M:%SZ')}",
+            project_id=project_ref.id,
+        )
 
     async def get_issue_custom_fields(self):
         try:
