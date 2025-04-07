@@ -182,7 +182,7 @@ async def delete_dashboard_handler(
     dashboard_repository: Annotated[
         DashboardRepository, Depends(_get_dashboard_repository)
     ],
-    internal_id: str, 
+    internal_id: str,
 ):
     await dashboard_repository.delete_by_internal_id(internal_id)
     return {

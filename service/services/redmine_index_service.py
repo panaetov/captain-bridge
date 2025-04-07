@@ -174,10 +174,15 @@ class Worker:
 
         for issue_ref in issue_refs:
             self.logger.info(f"Updating issue {issue_ref.id}, updated on {issue_ref.updated_on}.")
-            custom_fields = self.parse_custom_fields(
-                list(issue_ref.custom_fields.values()),
-                custom_field_specs,
-            )
+            raw_custom_fields = getattr(issue_ref, 'custom_fields', None)
+            if raw_custom_fields:
+                custom_fields = self.parse_custom_fields(
+                    list(raw_custom_fields.values()),
+                    custom_field_specs,
+                )
+            else:
+                custom_fields = []
+
             assigned_to = getattr(issue_ref, 'assigned_to', None)
             parent = getattr(issue_ref, 'parent', None)
 
