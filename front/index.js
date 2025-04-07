@@ -117,6 +117,12 @@ $(function() {
             save: GLOBALS.BACKEND_HOST + '/sources/jiras',
             indexify: GLOBALS.WS_BACKEND_HOST + '/sources/jiras/indexify'
         },
+        redmines: {
+            delete: GLOBALS.BACKEND_HOST + '/sources/redmines',
+            list: GLOBALS.BACKEND_HOST + '/sources/redmines',
+            save: GLOBALS.BACKEND_HOST + '/sources/redmines',
+            indexify: GLOBALS.WS_BACKEND_HOST + '/sources/redmines/indexify'
+        },
         issues: {
             options: GLOBALS.BACKEND_HOST + '/sources/issues/options'
         },
@@ -175,7 +181,7 @@ $(function() {
         return -offset;
     }
 
-    CB.render_jira_status = function(status) {
+    CB.render_source_status = function(status) {
         status = status.toUpperCase();
         if (status == 'INDEXING') {
             return "<img class='cb-status-icon' src='/front/images/doom-unknown.png'><br><span class='cb-index-status'>IN PROGRESS<span>"
@@ -190,6 +196,49 @@ $(function() {
 
     }
 
+    CB.render_redmines_table = function() {
+        var clean = CB.confirm_form_close(function() {
+            CB.render_redmines_table();
+        });
+
+        if (!clean) {
+            return;
+        }
+
+        location.hash = "redmines";
+        CB.set_active_menu("#cb-sources-menu");
+
+        CB.hide_all_innerblocks();
+        var $panel = $("#cb-redmines-table");
+        var $tbody = $panel.find('tbody')
+
+        $.ajax({
+            url: URLS.redmines.list,
+            dataType: 'json',
+            crossDomain: true,
+
+            success: function(redmines) {
+                $tbody.empty();
+
+                var i;
+                for(i=0; i<redmines.length; i++) {
+                    var d = redmines[i];
+
+                    var status_html = CB.render_source_status(d.status);
+                    $tbody.append(
+                        "<tr onclick=\"CB.render_redmine_form('" + d.internal_id + "');\">" +
+                        `<td class='${CB.get_source_status_class(d.status)}'>` + status_html + "</td>" +
+                        "<td>" + d.name + "</td>" +
+                        "<td>" + d.url + "</td>" +
+                        "</tr>"
+                    );
+                }
+                $panel.show(100);
+            },
+            error: CB.process_http_error
+        });
+    }
+
     CB.render_jiras_table = function() {
         var clean = CB.confirm_form_close(function() {
             CB.render_jiras_table();
@@ -200,7 +249,7 @@ $(function() {
         }
 
         location.hash = "jiras";
-		CB.set_active_menu("#cb-sources-menu");
+        CB.set_active_menu("#cb-sources-menu");
 
         CB.hide_all_innerblocks();
         var $panel = $("#cb-jiras-table");
@@ -218,11 +267,10 @@ $(function() {
                 for(i=0; i<jiras.length; i++) {
                     var d = jiras[i];
 
-                    var status_html = CB.render_jira_status(d.status);
+                    var status_html = CB.render_source_status(d.status);
                     $tbody.append(
                         "<tr onclick=\"CB.render_jira_form('" + d.internal_id + "');\">" +
-                        `<td class='${CB.get_jira_status_class(d.status)}'>` + status_html + "</td>" +
-                        "<td>" + d.internal_id + "</td>" +
+                        `<td class='${CB.get_source_status_class(d.status)}'>` + status_html + "</td>" +
                         "<td>" + d.name + "</td>" +
                         "<td>" + d.url + "</td>" +
                         "</tr>"
@@ -232,6 +280,92 @@ $(function() {
             },
             error: CB.process_http_error
         });
+    }
+
+    CB.onchange_redmine_auth_method = function() {
+        var $form = $("#cb-redmine-form");
+        var method = $form.find(".cb-auth-method-input").val();
+
+        if (method == 'basic') {
+            $form.find(".cb-auth-method-basic-section").show();
+            $form.find(".cb-auth-method-token-section").hide();
+        } else {
+            $form.find(".cb-auth-method-basic-section").hide();
+            $form.find(".cb-auth-method-token-section").show();
+        }
+    }
+
+    CB.render_redmine_form = function(internal_id, preserve_before_update) {
+        var clean = CB.confirm_form_close(function() {
+            CB.render_redmine_form(internal_id, preserve_before_update);
+        });
+
+        if (!clean) {
+            return;
+        }
+
+        location.hash = `redmine:${internal_id || ''}`;
+        CB.set_active_menu("#cb-sources-menu");
+
+        var $form = $("#cb-redmine-form");
+        var $legend = $("#cb-redmine-form > legend");
+
+        if (!preserve_before_update) {
+            CB.empty_redmine_form();
+        }
+
+        var _finish_form = function() {
+            CB.hide_all_innerblocks();
+            var $panel = $("#cb-redmine-form");
+
+            CB.onchange_redmine_auth_method();
+            $panel.show(100);
+        }
+
+        if (internal_id) {
+            $.ajax({
+                url: URLS.redmines.list + "/" + internal_id,
+
+                dataType: 'json',
+                crossDomain: true,
+
+                success: function(redmine) {
+                    $legend.text("Redmine [" + redmine.name + "]");
+                    $form.find(".cb-internal-id-input").val(redmine.internal_id);
+                    $form.find(".cb-name-input").val(redmine.name);
+                    $form.find(".cb-url-input").val(redmine.url);
+                    $form.find(".cb-login-input").val(redmine.login);
+                    $form.find(".cb-password-input").val(redmine.password);
+                    $form.find(".cb-auth-method-input").val(redmine.auth_method || 'basic');
+                    $form.find(".cb-token-input").val(redmine.token);
+                    $form.find(".cb-projects-input").val(
+                        (redmine.projects || []).join("\n")
+                    );
+                    $form.find(".cb-index-period-input").val(redmine.index_period);
+                    $form.find(".cb-index-status-input").val(redmine.status);
+
+                    $form.find(".cb-indexed-at-input").val(
+                        iso_to_human(redmine.indexed_at, 'UTC')
+                    );
+
+                    var i;
+                    for (i=0; i<redmine.logs.length; ++i) {
+                        CB.add_redmine_log(redmine.logs[i]);
+                    }
+
+                    if (!redmine.logs.length) {
+                        var $log_container = $("#cb-redmine-indexify-log");
+                        $log_container.html("No logs yet...");
+                    }
+                    _finish_form();
+                },
+                error: CB.process_http_error
+            });
+
+        } else {
+            $legend.html("Creating a new redmine source");
+            _finish_form();
+        }
     }
 
     CB.close_popup = function(el) {
@@ -377,6 +511,36 @@ $(function() {
         );
     }
 
+    CB.refresh_redmine_logs_onclick = function() {
+        var $form = $("#cb-redmine-form");
+        var internal_id = $form.find(".cb-internal-id-input").val();
+        if (!internal_id) {
+            return;
+        }
+
+        $.ajax({
+            url: URLS.redmines.list + "/" + internal_id,
+
+            dataType: 'json',
+            crossDomain: true,
+
+            success: function(redmine) {
+                $("#cb-redmine-indexify-log").empty();
+
+                var i;
+                for (i=0; i<redmine.logs.length; ++i) {
+                    CB.add_redmine_log(redmine.logs[i]);
+                }
+
+                if (!redmine.logs.length) {
+                    var $log_container = $("#cb-redmine-indexify-log");
+                    $log_container.html("No logs yet...");
+                }
+            },
+            error: CB.process_http_error
+        });
+    }
+
     CB.refresh_jira_logs_onclick = function() {
         var $form = $("#cb-jira-form");
         var internal_id = $form.find(".cb-internal-id-input").val();
@@ -405,6 +569,54 @@ $(function() {
             },
             error: CB.process_http_error
         });
+    }
+
+    CB.indexify_redmine_onclick = function(button, full) {
+        var $button = $(button);
+
+        var internal_id = $("#cb-redmine-form").find(".cb-internal-id-input").val();
+        if (!internal_id || !CB._FORM_CLEAN) {
+            CB.show_popup('Cannot do it', 'Changes are not saved yet. Click Save button before proceeding. ');
+            return;
+        }
+
+        $("#cb-redmine-indexify-progress-bar").css("visibility", "visible");
+
+        var ws_proto = 'wss';
+        if (location.protocol == 'http:') {
+            ws_proto = 'ws';
+        }
+
+        var ws_url = `${ws_proto}://${location.host}${URLS.redmines.indexify}`
+        let socket = new WebSocket(ws_url);
+
+        socket.onopen = function(e) {
+            socket.send(internal_id + "_" + (full? 'full': 'delta'));
+        };
+
+        socket.onmessage = function(event) {
+            console.log(`[message] Данные получены с сервера: ${event.data}`);
+            var log = JSON.parse(event.data);
+            CB.add_redmine_log(log, true);
+        };
+
+        socket.onclose = function(event) {
+            $("#cb-redmine-indexify-progress-bar").css("visibility", "hidden");
+            if (event.wasClean) {
+                console.log(`[close] Соединение закрыто чисто, код=${event.code} причина=${event.reason}`);
+            } else {
+                // например, сервер убил процесс или сеть недоступна
+                // обычно в этом случае event.code 1006
+                var error = 'Соединение прервано. Ошибка на сервере.';
+                CB.show_popup("Request failed", error);
+            }
+            CB.render_redmine_form(internal_id, true);
+        };
+
+        socket.onerror = function(error) {
+            $("#cb-redmine-indexify-progress-bar").css("visibility", "hidden");
+            CB.show_popup("Request failed", error);
+        };
     }
 
     CB.indexify_jira_onclick = function(button, full) {
@@ -468,12 +680,20 @@ $(function() {
             );
             $collection_name = $(
             "<select class='tui-input cb-input-collection-name-input' >" +
-            "<option>datasource_jira_issues_public</option>" +
-            "<option>datasource_jira_sprints_public</option>" +
-            "</select><br>"
+            "<option value='datasource_jira_issues_public'>Jira issues</option>" +
+            "<option value='datasource_jira_sprints_public'>Jira sprints</option>" +
+            "<option value='datasource_redmine_issues_public'>Redmine issues</option>" +
+            "</select>"
             );
             $collection_name.val(stage_input.collection_name || '');
             $details.append($collection_name);
+
+            $docs = $(
+                "<a class='cb-input-collection-doc' target='_blank' href='https://google.com'>?</a>"
+            );
+            $docs.attr("href", "https://github.com/panaetov/captain-bridge/wiki/Indexed-Data")
+            $details.append($docs);
+            $details.append('<br>');
         }
 
         if ($type.val() == 'stage') {
@@ -1175,7 +1395,7 @@ $(function() {
                 CB.show_popup('OK', 'Metric is saved');
                 $form.find(".cb-internal-id-input").val(result.internal_id);
                 location.hash = `metric:${result.internal_id || ''}`;
-				CB.set_active_menu("#cb-metrics-menu");
+                CB.set_active_menu("#cb-metrics-menu");
             },
             error: CB.process_http_error
         });
@@ -2324,7 +2544,7 @@ $(function() {
         }
     }
 
-    CB.get_jira_status_class = function(status) {
+    CB.get_source_status_class = function(status) {
         status = status.toUpperCase();
         if (status == 'INDEXING') {
             return 'cb-status-provisioning';
@@ -2397,6 +2617,22 @@ $(function() {
         }
     }
 
+    CB.empty_redmine_form = function() {
+        $("#cb-redmine-form .cb-internal-id-input").val('');
+        $("#cb-redmine-form .cb-name-input").val('');
+        $("#cb-redmine-form .cb-url-input").val('');
+        $("#cb-redmine-form .cb-login-input").val('');
+        $("#cb-redmine-form .cb-password-input").val('');
+        $("#cb-redmine-form .cb-indexed-at-input").val('');
+        $("#cb-redmine-form .cb-index-period-input").val(60);
+        $("#cb-redmine-form .cb-index-status-input").val('');
+        $("#cb-redmine-form-errors").empty();
+        $("#cb-redmine-form-errors").hide();
+        $("#cb-redmine-indexify-log").empty();
+        $("#cb-redmine-form .cb-projects-input").val('');
+        $("#cb-redmine-custom-fields tbody").html('');
+    }
+
     CB.empty_jira_form = function() {
         $("#cb-jira-form .cb-internal-id-input").val('');
         $("#cb-jira-form .cb-name-input").val('');
@@ -2423,6 +2659,51 @@ $(function() {
         }
 
         return url.protocol === "http:" || url.protocol === "https:";
+    }
+
+    CB.validate_redmine_form = function(payload) {
+        var $errors = $("#cb-redmine-form-errors");
+        $errors.empty();
+
+        if (!payload.name) {
+            CB.add_form_error($errors, "Name is empty.");
+            return false;
+        }
+
+        if (!payload.url) {
+            CB.add_form_error($errors, "URL is empty.");
+            return false;
+        }
+
+        if (!CB.is_valid_url(payload.url)) {
+            CB.add_form_error($errors, "URL is not a valid URL.");
+            return false;
+        }
+
+        if (payload.auth_method == 'basic') {
+            if (!payload.login) {
+                CB.add_form_error($errors, "Login is empty.");
+                return false;
+               }
+
+            if (!payload.password) {
+                CB.add_form_error($errors, "Password is empty.");
+                return false;
+            }
+        } else {
+            if (!payload.token) {
+                CB.add_form_error($errors, "Personal token is empty.");
+                return false;
+            }
+
+        }
+
+        if (!payload.projects.length) {
+            CB.add_form_error($errors, "Projects are not set.");
+            return false;
+        }
+
+        return true;
     }
 
     CB.validate_jira_form = function(payload) {
@@ -2489,6 +2770,57 @@ $(function() {
         return true;
     }
 
+    CB.save_redmine = function() {
+        $form = $("#cb-redmine-form");
+        var projects = [];
+        var raw_projects = $form.find(".cb-projects-input").val().split(/\s+/);
+        var i;
+        for(i=0; i<raw_projects.length; ++i) {
+            var project_name = raw_projects[i].trim();
+            if (project_name) {
+                projects.push(project_name);
+            }
+        }
+
+        var payload = {
+            internal_id: $form.find(".cb-internal-id-input").val(),
+            name: $form.find('.cb-name-input').val().trim(),
+            url: $form.find(".cb-url-input").val().trim(),
+            auth_method: $form.find(".cb-auth-method-input").val().trim(),
+            token: $form.find(".cb-token-input").val().trim(),
+            login: $form.find(".cb-login-input").val().trim(),
+            password: $form.find(".cb-password-input").val().trim(),
+            projects: projects
+        }
+
+        var is_valid = CB.validate_redmine_form(payload);
+        if (!is_valid) {
+            $("#cb-redmine-form-errors").show();
+            return;
+        } else {
+            $("#cb-redmine-form-errors").hide();
+        }
+
+        $.ajax({
+            url: URLS.redmines.save,
+            method: 'post',
+            dataType: 'json',
+            crossDomain: true,
+            contentType: "application/json",
+
+            data: JSON.stringify(payload),
+
+            success: function(result) {
+                CB._FORM_CLEAN = true;
+                CB.show_popup('OK', 'Source is saved');
+                CB.render_redmine_form(result.internal_id);
+                location.hash = `redmine:${result.internal_id || ''}`;
+                CB.set_active_menu("#cb-sources-menu");
+            },
+            error: CB.process_http_error
+        });
+    }
+
     CB.save_jira = function() {
         $form = $("#cb-jira-form");
         var projects = [];
@@ -2547,7 +2879,7 @@ $(function() {
                 CB.show_popup('OK', 'Source is saved');
                 CB.render_jira_form(result.internal_id);
                 location.hash = `jira:${result.internal_id || ''}`;
-				CB.set_active_menu("#cb-sources-menu");
+                CB.set_active_menu("#cb-sources-menu");
             },
             error: CB.process_http_error
         });
@@ -2641,7 +2973,7 @@ $(function() {
         }
 
         location.hash = `jira:${internal_id || ''}`;
-		CB.set_active_menu("#cb-sources-menu");
+        CB.set_active_menu("#cb-sources-menu");
 
         var $form = $("#cb-jira-form");
         var $legend = $("#cb-jira-form > legend");
@@ -2666,7 +2998,7 @@ $(function() {
                 crossDomain: true,
 
                 success: function(jira) {
-                    $legend.text("Changing jira source <" + jira.name + ">");
+                    $legend.text("Jira [" + jira.name + "]");
                     $form.find(".cb-internal-id-input").val(jira.internal_id);
                     $form.find(".cb-name-input").val(jira.name);
                     $form.find(".cb-url-input").val(jira.url);
@@ -2725,6 +3057,28 @@ $(function() {
             return 'cb-exception-level';
         }
     }
+
+    CB.add_redmine_log = function(log, prepend) {
+        var $log_container = $("#cb-redmine-indexify-log");
+
+        var $item = $(
+            `<div class='cb-redmine-log-item'>` +
+            `<span class='cb-redmine-log-item-created-at'>${iso_to_human(log.created_at)}</span>` +
+            `<span class='cb-redmine-log-item-level ${CB.get_log_level_class(log.level)}'>${log.level}</span>` +
+            `<span class='cb-redmine-log-item-message'></span>` +
+            `<br>` +
+            `</div>`
+        );
+        // to prevent injections
+        $item.find(".cb-redmine-log-item-message").text(log.message);
+
+        if (prepend) {
+            $log_container.prepend($item);
+        } else {
+            $log_container.append($item);
+        }
+    }
+
 
     CB.add_jira_log = function(log, prepend) {
         var $log_container = $("#cb-jira-indexify-log");
@@ -2901,7 +3255,7 @@ $(function() {
                 CB.show_popup('OK', 'Planning is saved');
                 $form.find(".cb-internal-id-input").val(result.internal_id);
                 location.hash = `planning:${result.internal_id || ''}`;
-				CB.set_active_menu("#cb-plannings-menu");
+                CB.set_active_menu("#cb-plannings-menu");
 
                 var key, payload = [];
                 for(issue_internal_id in self.done_percents) {
@@ -4014,7 +4368,7 @@ $(function() {
         }
 
         location.hash = "plannings";
-		CB.set_active_menu("#cb-plannings-menu");
+        CB.set_active_menu("#cb-plannings-menu");
 
         CB.hide_all_innerblocks();
         var $panel = $("#cb-plannings-table");
@@ -4054,7 +4408,7 @@ $(function() {
         }
 
         location.hash = `planning:${internal_id || ''}`;
-		CB.set_active_menu("#cb-plannings-menu");
+        CB.set_active_menu("#cb-plannings-menu");
 
         var $form = $("#cb-planning-form");
         var $legend = $("#cb-planning-form > legend");
@@ -4095,7 +4449,7 @@ $(function() {
                     var planning = reply.planning
                     var employees = reply.employees;
 
-                    $legend.text("Changing planning <" + planning.name + ">");
+                    $legend.text("Planning [" + planning.name + "]");
                     $form.find(".cb-internal-id-input").val(planning.internal_id);
                     $form.find(".cb-name-input").val(planning.name);
 
@@ -4153,7 +4507,7 @@ $(function() {
         }
 
         location.hash = `metric:${internal_id || ''}`;
-		CB.set_active_menu("#cb-metrics-menu");
+        CB.set_active_menu("#cb-metrics-menu");
 
         var $form = $("#cb-metric-form");
         var $legend = $("#cb-metric-form > legend");
@@ -4175,7 +4529,7 @@ $(function() {
                 crossDomain: true,
 
                 success: function(metric) {
-                    $legend.text("Changing metric <" + metric.name + ">");
+                    $legend.text("Query [" + metric.name + "]");
                     $form.find(".cb-internal-id-input").val(metric.internal_id);
                     $form.find(".cb-name-input").val(metric.name);
                     var i;
@@ -4234,7 +4588,7 @@ $(function() {
         }
 
         location.hash = "metrics";
-		CB.set_active_menu("#cb-metrics-menu");
+        CB.set_active_menu("#cb-metrics-menu");
 
         if (root && escaped) {
             root = unescape(root);
@@ -4627,7 +4981,7 @@ $(function() {
                 CB._FORM_CLEAN = true;
                 $form.find(".cb-internal-id-input").val(result.internal_id);
                 location.hash = `dashboard:${result.internal_id || ''}`;
-				CB.set_active_menu("#cb-dashboards-menu");
+                CB.set_active_menu("#cb-dashboards-menu");
             },
             error: CB.process_http_error
         });
@@ -4795,7 +5149,7 @@ $(function() {
         }
 
         location.hash = `dashboard:${internal_id || ''}`;
-		CB.set_active_menu("#cb-dashboards-menu");
+        CB.set_active_menu("#cb-dashboards-menu");
 
         CB.hide_all_innerblocks();
         var $panel = $("#cb-dashboards-table");
@@ -4865,7 +5219,7 @@ $(function() {
         }
 
         location.hash = "dashboards";
-		CB.set_active_menu("#cb-dashboards-menu");
+        CB.set_active_menu("#cb-dashboards-menu");
 
         CB._DASHBOARDS_ROOT = root;
         CB.hide_all_innerblocks();
@@ -4938,10 +5292,10 @@ $(function() {
         $("#cb-readme").show(100);
     }
 
-	CB.set_active_menu = function(menu_id) {
-		$(".cb-header-item").removeClass("active");
-		$(menu_id).addClass("active");
-	}
+    CB.set_active_menu = function(menu_id) {
+        $(".cb-header-item").removeClass("active");
+        $(menu_id).addClass("active");
+    }
 
 
     CB.generate_timeseries_format_error = function() {
@@ -4959,9 +5313,16 @@ $(function() {
     } else if (HASH == '#jiras') {
         CB.render_jiras_table();
 
+    } else if (HASH == '#redmines') {
+        CB.render_redmines_table();
+
     } else if (HASH.startsWith("#jira:")) {
         var internal_id = HASH.split(":")[1];
         CB.render_jira_form(internal_id);
+
+    } else if (HASH.startsWith("#redmine:")) {
+        var internal_id = HASH.split(":")[1];
+        CB.render_redmine_form(internal_id);
 
     } else if (HASH.startsWith("#metric:")) {
         var internal_id = HASH.split(":")[1];

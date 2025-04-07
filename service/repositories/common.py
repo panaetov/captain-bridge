@@ -107,15 +107,22 @@ class Repository:
             self.get_default_entity_factory()(**record) for record in records
         ]
 
-    async def fetch(self, match):
-        cursor = self.get_table().aggregate(self.build_fetch_pipeline(match))
+    async def fetch(self, match, limit=None):
+        pipeline = self.build_fetch_pipeline(match, limit=limit)
+        if limit is not None:
+            pipeline.append(
+                {
+                    "$limit": limit,
+                }
+            )
+
+        cursor = self.get_table().aggregate(pipeline)
 
         records = await cursor.to_list(None)
         return records
 
     async def extract(self, match):
         records = await self.fetch(match)
-
         return [self.default_entity_factory(**r) for r in records]
 
     def build_fetch_pipeline(self, match, limit=None):
@@ -124,13 +131,6 @@ class Repository:
                 "$match": match,
             },
         ]
-
-        if limit is not None:
-            pipeline.append(
-                {
-                    "$limit": limit,
-                }
-            )
 
         return pipeline
 

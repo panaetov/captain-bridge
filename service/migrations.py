@@ -7,6 +7,36 @@ logger = logging.getLogger(__name__)
 
 async def apply_all(db):
     await apply_1(db)
+    await apply_2(db)
+    await apply_3(db)
+
+
+async def create_collections(db, collections):
+    for col in collections:
+        try:
+            logger.info(f"Creating collection {col}")
+            await db.create_collection(col, check_exists=True)
+        except pymongo.errors.CollectionInvalid as e:
+            if "already exists" in str(e):
+                continue
+            else:
+                raise e
+
+
+async def create_indexes(db, indexes):
+    for index in indexes:
+        kwargs = {}
+        if index.unique:
+            kwargs["unique"] = True
+
+        if index.ttl_secs:
+            kwargs["expireAfterSeconds"] = index.ttl_secs
+
+        logger.info(f"Creating index in {index.collection}: fields={index.fields}, options={kwargs}")
+        await getattr(db, index.collection).create_index(
+            index.fields,
+            **kwargs,
+        )
 
 
 async def apply_1(db):
@@ -27,16 +57,8 @@ async def apply_1(db):
         "planning_plannings",
         "planning_plannings",
     ]
-    for col in collections:
-        try:
-            logger.info(f"Creating collection {col}")
-            await db.create_collection(col, check_exists=True)
-        except pymongo.errors.CollectionInvalid as e:
-            if "already exists" in str(e):
-                continue
-            else:
-                raise e
 
+    await create_collections(db, collections)
     indexes = [
         # JIRA.JIRAS
         Index(
@@ -201,20 +223,129 @@ async def apply_1(db):
             ("planning_internal_id", pymongo.ASCENDING),
         ),
     ]
+    await create_indexes(db, indexes)
 
-    for index in indexes:
-        kwargs = {}
-        if index.unique:
-            kwargs["unique"] = True
 
-        if index.ttl_secs:
-            kwargs["expireAfterSeconds"] = index.ttl_secs
+async def apply_2(db):
+    collections = [
+        "datasource_gitlab_gitlabs",
+        "datasource_gitlab_commits",
+        "datasource_gitlab_commits_public",
+        "datasource_gitlab_logs",
+    ]
+    await create_collections(db, collections)
 
-        logger.info(f"Creating index: fields={index.fields}, options={kwargs}")
-        await getattr(db, index.collection).create_index(
-            index.fields,
-            **kwargs,
-        )
+    indexes = [
+        Index(
+            "datasource_gitlab_gitlabs",
+            ("internal_id", pymongo.ASCENDING),
+            unique=True,
+        ),
+
+        Index(
+            "datasource_gitlab_commits",
+            ("internal_id", pymongo.ASCENDING),
+            unique=True,
+        ),
+        Index(
+            "datasource_gitlab_commits",
+            ("commit_id", pymongo.ASCENDING),
+            ("gitlab_internal_id", pymongo.ASCENDING),
+            unique=True,
+        ),
+
+        Index(
+            "datasource_gitlab_commits_public",
+            ("internal_id", pymongo.ASCENDING),
+            unique=True,
+        ),
+        Index(
+            "datasource_gitlab_commits_public",
+            ("created_at", pymongo.ASCENDING),
+        ),
+        Index(
+            "datasource_gitlab_commits_public",
+            ("project_name", pymongo.ASCENDING),
+        ),
+        Index(
+            "datasource_gitlab_commits_public",
+            ("project_id", pymongo.ASCENDING),
+        ),
+
+        Index(
+            "datasource_gitlab_commits_public",
+            ("author", pymongo.ASCENDING),
+        ),
+
+        Index(
+            "datasource_gitlab_logs",
+            ("gitlab_internal_id", pymongo.ASCENDING),
+        ),
+        Index(
+            "datasource_gitlab_logs",
+            ("created_at", pymongo.ASCENDING),
+            ttl_secs=600,
+        ),
+    ]
+    await create_indexes(db, indexes)
+
+
+async def apply_3(db):
+    collections = [
+        "datasource_redmine_redmines",
+        "datasource_redmine_issues",
+        "datasource_redmine_issues_public",
+    ]
+    await create_collections(db, collections)
+
+    indexes = [
+        Index(
+            "datasource_redmine_redmines",
+            ("internal_id", pymongo.ASCENDING),
+            unique=True,
+        ),
+
+        Index(
+            "datasource_redmine_issues",
+            ("internal_id", pymongo.ASCENDING),
+            unique=True,
+        ),
+        Index(
+            "datasource_redmine_issues",
+            ("id", pymongo.ASCENDING),
+            ("redmine_internal_id", pymongo.ASCENDING),
+            unique=True,
+        ),
+
+        Index(
+            "datasource_redmine_issues_public",
+            ("internal_id", pymongo.ASCENDING),
+            unique=True,
+        ),
+        Index(
+            "datasource_redmine_issues_public",
+            ("created_at", pymongo.ASCENDING),
+        ),
+        Index(
+            "datasource_redmine_issues_public",
+            ("project", pymongo.ASCENDING),
+        ),
+        Index(
+            "datasource_redmine_issues_public",
+            ("author.name", pymongo.ASCENDING),
+        ),
+
+        Index(
+            "datasource_redmine_logs",
+            ("redmine_internal_id", pymongo.ASCENDING),
+        ),
+        Index(
+            "datasource_redmine_logs",
+            ("created_at", pymongo.ASCENDING),
+            ttl_secs=600,
+        ),
+    ]
+    await create_indexes(db, indexes)
 
 
 class Index:

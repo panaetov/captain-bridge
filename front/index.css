@@ -31,7 +31,7 @@ body {
 }
 
 .cb-innerblock >.tui-fieldset-text {
-	display: none;
+    display: none;
 }
 
 #cb-helloworld-spok {
@@ -98,7 +98,6 @@ input, select, textarea, fieldset {
 }
 
 .cb-name-input {
-    width: 50em;
 }
 
 .cb-metric-presentation-block {
@@ -252,8 +251,8 @@ input, select, textarea, fieldset {
 }
 
 #cb-add-new-metric-popup button a {
-	display: block;
-	width: 100%;
+    display: block;
+    width: 100%;
 }
 
 #cb-popup {
@@ -388,6 +387,14 @@ textarea:focus {
     float:left;
 }
 
+#cb-redmine-indexify-log {
+    background: black;
+    padding: 0.5em;
+    max-height: 400px;
+    overflow: auto;
+}
+
+
 #cb-jira-indexify-log {
     background: black;
     padding: 0.5em;
@@ -397,6 +404,24 @@ textarea:focus {
 
 #cb-jira-indexify-progress-bar {
     visibility: hidden;
+}
+
+#cb-redmine-indexify-progress-bar {
+    visibility: hidden;
+}
+
+.cb-redmine-log-item-created-at {
+    margin-right: 0.5em;
+    background: #eeee;
+    color: black;
+}
+
+.cb-redmine-log-item-level {
+    margin-right: 0.5em;
+    width: 60px;
+    display: inline-block;
+    text-align: center;
+    padding: 0.2em;
 }
 
 .cb-jira-log-item-created-at {
@@ -587,7 +612,7 @@ body {
 }
 
 .tui-input:focus {
-	background-color: #fff !important;
+    background-color: #fff !important;
     color: black !important;
 }
 
@@ -1200,5 +1225,22 @@ legend {
 }
 
 .cb-innerblock >legend {
-	display: none;
+    font-size: 1em;
+}
+
+.cb-header-icon {
+    height: 1.2em;
+}
+
+.cb-header-link {
+    padding: 0 25%;
+    text-align: left;
+}
+
+.cb-input-collection-doc {
+    margin: 0 7px;
+    background: white;
+    color: black;
+    padding: 0 4px;
+    border: 3px red solid;
 }

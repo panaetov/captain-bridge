@@ -19,33 +19,6 @@ from service.entities.jira import (
 logger = logging.getLogger(__name__)
 
 
-class TeeLogger:
-    def __init__(self):
-        self.callbacks = []
-        self.pending_callbacks = []
-
-    def subscribe(self, callback):
-        self.callbacks.append(callback)
-
-    def info(self, message, public=True):
-        logger.info(message)
-        if public:
-            self.propagate_subscribers(message, "info")
-
-    def exception(self, message, public=True):
-        logger.exception(message)
-        if public:
-            self.propagate_subscribers(message, "error")
-
-    def propagate_subscribers(self, message, level):
-        for cb in self.callbacks:
-            task = asyncio.create_task(cb(message, level))
-            self.pending_callbacks.append(task)
-
-    async def wait_pending_callbacks(self):
-        await asyncio.gather(*self.pending_callbacks)
-
-
 class JiraIndexService:
     def __init__(
         self,
@@ -87,7 +60,7 @@ class Worker:
     ):
         self.launcher = launcher
         self.jira_internal_id = jira_internal_id
-        self.logger = TeeLogger()
+        self.logger = utils.TeeLogger()
         if watcher_callback:
             self.logger.subscribe(watcher_callback)
         self.logger.subscribe(self.save_log)
@@ -214,6 +187,7 @@ class Worker:
 
         if not self.full:
             max_updated = await self.launcher.issues_repository.get_max_updated(
+                self.jira_internal_id,
                 project.key,
             )
 

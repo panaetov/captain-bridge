@@ -25,6 +25,9 @@ class JiraRepository(Repository):
         if not fields["password"]:
             fields.pop("password")
 
+        if not fields["token"]:
+            fields.pop("token")
+
         fields.pop("logs")
         fields.pop("indexed_at")
 
@@ -74,13 +77,6 @@ class JiraRepository(Repository):
                 },
             },
         ]
-
-        if limit is not None:
-            pipeline.append(
-                {
-                    "$limit": limit,
-                }
-            )
 
         return pipeline
 
@@ -258,12 +254,13 @@ class IssueRepository(Repository):
 
         return issues
 
-    async def get_max_updated(self, project_key):
+    async def get_max_updated(self, jira_internal_id, project_key):
         cursor = self.get_table().aggregate(
             [
                 {
                     "$match": {
                         "project": project_key,
+                        "jira_internal_id": jira_internal_id,
                     },
                 },
                 {

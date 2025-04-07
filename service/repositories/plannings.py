@@ -11,7 +11,7 @@ class PlanningRepository(Repository):
     table = "planning_plannings"
     default_entity_factory = Planning
 
-    def build_fetch_pipeline(self, match):
+    def build_fetch_pipeline(self, match, limit=None):
         pipeline = [
             {
                 "$match": match,

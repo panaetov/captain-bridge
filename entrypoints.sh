@@ -13,17 +13,25 @@ case "$1" in
             --host 0.0.0.0
         ;;
 
-	"index_jira")
-		exec python service/periodics/index_jira.py
-		;;
+    "index_jira")
+        exec python service/periodics/index_jira.py
+        ;;
 
-	"migrate")
-		exec python service/migrate.py
-		;;
+    "index_gitlab")
+        exec python service/periodics/index_gitlab.py
+        ;;
 
-	"actualize_plannings")
-		exec python service/periodics/actualize_plannings.py
-		;;
+    "index_redmine")
+        exec python service/periodics/index_redmine.py
+        ;;
+
+    "migrate")
+        exec python service/migrate.py
+        ;;
+
+    "actualize_plannings")
+        exec python service/periodics/actualize_plannings.py
+        ;;
 
     "front_server")
         echo "Starting front-server ..."
