@@ -174,12 +174,12 @@ async def get_one_dashboard_handler(
     return _dump_dashboard(dashboards[0])
 
 
-@router.delete("/metric/dashboards/{internal_id}")
+@router.delete("/metric/dashboards/{internal_id}", dependencies=[Depends(_check_ro)])
 async def delete_dashboard_handler(
     dashboard_repository: Annotated[
         DashboardRepository, Depends(_get_dashboard_repository)
     ],
-    internal_id: str,
+    internal_id: str, 
 ):
     await dashboard_repository.delete_by_internal_id(internal_id)
     return {
@@ -275,7 +275,7 @@ async def get_metrics_handler(
     }
 
 
-@router.delete("/metric/metrics/{internal_id}")
+@router.delete("/metric/metrics/{internal_id}", dependencies=[Depends(_check_ro)])
 async def delete_metrics_handler(
     internal_id: str,
     metric_repository: Annotated[
@@ -481,7 +481,7 @@ async def get_one_jira_handler(
     return _dump_jira(jiras[0], projects)
 
 
-@router.delete("/sources/jiras/{internal_id}")
+@router.delete("/sources/jiras/{internal_id}", dependencies=[Depends(_check_ro)])
 async def delete_jira_handler(
     jira_repository: Annotated[
         jira_repositories.JiraRepository, Depends(_get_jira_repository)
@@ -745,7 +745,7 @@ async def get_plannings_handler(
     return [p.model_dump() for p in ps]
 
 
-@router.delete("/planning/plannings/{internal_id}")
+@router.delete("/planning/plannings/{internal_id}", dependencies=[Depends(_check_ro)])
 async def delete_planning_handler(
     internal_id: str,
     planning_repository: Annotated[
