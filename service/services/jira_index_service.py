@@ -364,6 +364,7 @@ class _IssueFactory:
                 created=comment_ref.created,
                 updated=comment_ref.updated,
                 body=comment_ref.body,
+                author=self._map_user(comment_ref.author.__dict__),
             )
             for comment_ref in comment_refs
         ]

@@ -117,6 +117,7 @@ class Comment(pydantic.BaseModel):
     created: datetime.datetime
     updated: datetime.datetime
     body: str
+    author: User | None = None
 
 
 class Issue(pydantic.BaseModel):
