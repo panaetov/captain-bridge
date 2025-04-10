@@ -16,11 +16,11 @@
     <script src="/front/contrib/moment/moment.js"></script>
     <script src="/front/contrib/select2/select2.min.js"></script>
 
-	<script type="module" src="/front/contrib/codemirror/index.js"></script>
+    <script type="module" src="/front/contrib/codemirror/index.js"></script>
     <script type="module" src="/front/contrib/codemirror/javascript.js"></script>
     <script type="module" src="/front/contrib/codemirror/python.js"></script>
 
-	<script src="/front/index.js"></script>
+    <script src="/front/index.js"></script>
 
     <link rel="stylesheet" href="/front/contrib/tui/tuicss.min.css"/>
     <link rel="stylesheet" href="/front/contrib/apexcharts/apexcharts.css" />
@@ -69,17 +69,17 @@
                         <a class="cursor-pointer inline">Data sources &#9776;</a>
                         <div class="cb-dropdown-content">
                             <a class='cb-header-link' href='/#jiras' onclick="CB.render_jiras_table();">
-                            	<img class='cb-header-icon' src='/front/images/jira.ico'/>
-                            	JIRA
+                                <img class='cb-header-icon' src='/front/images/jira.ico'/>
+                                JIRA
                             </a>
 
                             <a class='cb-header-link' href='/#redmines' onclick="CB.render_redmines_table();">
-                            	<img class='cb-header-icon' src='/front/images/redmine.ico'/>
-                            	REDMINE
+                                <img class='cb-header-icon' src='/front/images/redmine.ico'/>
+                                REDMINE
                             </a>
                             <a class='cb-header-link' href="#">
-                            	<img class='cb-header-icon' src='/front/images/gitlab.ico'/>
-                            	GITLAB
+                                <img class='cb-header-icon' src='/front/images/gitlab.ico'/>
+                                GITLAB
                             </a>
                         </div>
                     </li>
@@ -115,7 +115,7 @@
 
                 </div>
             </div>
-    	</div>
+        </div>
 
         <div class="tui-window" id="cb-mainblock" style="text-align: left;">
             <fieldset class="tui-fieldset cb-innerblock" id='cb-dashboards-table'>
@@ -230,6 +230,14 @@
                 <div class="red-168 full-width white-text" id='cb-redmine-form-errors'>
                 </div>
 
+                <div class='cb-datasource-warning'>
+                    <img src='/front/images/warning.webp'/>
+                    <a target='_blank'
+                        href='https://github.com/panaetov/captain-bridge/wiki/Redmine#prerequisites'>
+                    Don't forget to configure your Redmine.
+                    Read instructions.
+                    </a>
+                </div>
                 <br>
                 Internal ID..............: <input class='cb-internal-id-input disabled tui-input' disabled class="tui-input" value="" /><br>
                 Name.....................: <input class='cb-name-input tui-input' value="" /><br>
@@ -240,15 +248,15 @@
                     <option value='basic'>Login + Password</option>
                     <option value='token'>Personal Access Token</option>
                 </select>
-				<br/>
+                <br/>
 
-				<div class='cb-auth-method-basic-section'>
+                <div class='cb-auth-method-basic-section'>
                 Login....................: <input class='cb-login-input tui-input' value="" /><br>
                 Password.................: <input type='password' class='cb-password-input tui-input' value="" /><br>
-				</div>
-				<div class='cb-auth-method-token-section'>
+                </div>
+                <div class='cb-auth-method-token-section'>
                 Personal token...........: <input type='password' class='cb-token-input tui-input' value="" /><br>
-				</div>
+                </div>
                 <span class='cb-textarea-label'>Projects.................:</span>&nbsp<textarea class='cb-projects-input tui-input' value="" ></textarea><br>
 
                 <h1>Indexing</h1>
@@ -299,15 +307,15 @@
                     <option value='basic'>Login + Password</option>
                     <option value='token'>Personal Access Token</option>
                 </select>
-				<br/>
+                <br/>
 
-				<div class='cb-auth-method-basic-section'>
+                <div class='cb-auth-method-basic-section'>
                 Login....................: <input class='cb-login-input tui-input' value="" /><br>
                 Password.................: <input type='password' class='cb-password-input tui-input' value="" /><br>
-				</div>
-				<div class='cb-auth-method-token-section'>
+                </div>
+                <div class='cb-auth-method-token-section'>
                 Personal token...........: <input type='password' class='cb-token-input tui-input' value="" /><br>
-				</div>
+                </div>
                 <span class='cb-textarea-label'>Projects.................:</span>&nbsp<textarea class='cb-projects-input tui-input' value="" ></textarea><br>
 
                 <h1>Custom fields</h1>
@@ -376,11 +384,11 @@
                 </select>
                 </span>
 
-					<button onclick='CB.PLANNING.onchange_metric();' id='cb-reread-velocity-metric-button' class='tui-button'>
-					Refresh
+                    <button onclick='CB.PLANNING.onchange_metric();' id='cb-reread-velocity-metric-button' class='tui-button'>
+                    Refresh
                     </button>
 
-					<button id='cb-change-velocity-metric-link' class='tui-button'>
+                    <button id='cb-change-velocity-metric-link' class='tui-button'>
                     <a href='/#metrics' target='_blank'  >Go to metric</a>
                     </button>
 
@@ -392,18 +400,18 @@
                     <option value='90d'>3 months</option>
                 </select><br>
                 Issue size field......: <input
-					class='tui-input cb-issue-size-field-input'
-					onchange="CB.PLANNING.onchange_issue_size(this);"
-					value="" /><br>
+                    class='tui-input cb-issue-size-field-input'
+                    onchange="CB.PLANNING.onchange_issue_size(this);"
+                    value="" /><br>
                 Default issue size....: <input
-					class='tui-input cb-default-issue-size-input'
-					type='number' min='0' value="1"
-					onchange="CB.PLANNING.onchange_default_issue_size(this);"
-					/><br>
+                    class='tui-input cb-default-issue-size-input'
+                    type='number' min='0' value="1"
+                    onchange="CB.PLANNING.onchange_default_issue_size(this);"
+                    /><br>
                 <span class='cb-float-left'>Terminal states.......:
                 </span>&nbsp;<textarea
-					onchange="CB.PLANNING.onchange_terminal_states(this);"
-					class='tui-input cb-terminal-states-input' value="" ></textarea><br>
+                    onchange="CB.PLANNING.onchange_terminal_states(this);"
+                    class='tui-input cb-terminal-states-input' value="" ></textarea><br>
 
             <div class='tui-panel cb-stage-tabs' id='cb-planning-charts' style='width: 100%;'>
             <div class="tui-tabs cb-tabs-header">    
@@ -423,7 +431,7 @@
                         Velocities
                     </a></li>
 
-					<li><a class='tui-tab'
+                    <li><a class='tui-tab'
                         data-tab-content='cb-planning-day-offs-tab'>
                         Day-Offs
                     </a></li>
@@ -443,7 +451,7 @@
                     <tbody>
                     </tbody>
                 </table>
-				<span class='cb-no-velocity-metric'>No employees...</span>
+                <span class='cb-no-velocity-metric'>No employees...</span>
             </div>
 
             <div class='tui-tab-content' id='cb-planning-timeline-tab'>
@@ -461,7 +469,7 @@
                     <tbody>
                     </tbody>
                 </table>
-				<span class='cb-no-velocity-metric'>No employees...</span>
+                <span class='cb-no-velocity-metric'>No employees...</span>
             </div>
 
             <div class='tui-tab-content' id='cb-planning-day-offs-tab'>
@@ -475,14 +483,14 @@
                         </tr>
                         <tr>
                             <th>
-                            	<select id='cb-planning-employee-select-for-day-off'>
-									<option value=''>All</option>
-                            	</select>
+                                <select id='cb-planning-employee-select-for-day-off'>
+                                    <option value=''>All</option>
+                                </select>
                             </th>
                             <th><input id='cb-planning-date-from-for-day-off' type='date'></th>
                             <th><input id='cb-planning-date-to-for-day-off' type='date'></th>
                             <th>
-								<button class='tui-button' onclick='CB.PLANNING.commit_day_off_form();'>Add</button>
+                                <button class='tui-button' onclick='CB.PLANNING.commit_day_off_form();'>Add</button>
                             </th>
                         </tr>
 
@@ -490,15 +498,15 @@
                     <tbody>
                     </tbody>
                 </table>
-	
-				<span class='cb-no-velocity-metric'>No employees...</span>
+    
+                <span class='cb-no-velocity-metric'>No employees...</span>
             </div>
 
 
             <div class='tui-tab-content' id='cb-planning-assigned-issues-tab'>
                 <div id='cb-assigned-issues-chart'>
                 </div>
-				<span class='cb-no-velocity-metric'>No employees...</span>
+                <span class='cb-no-velocity-metric'>No employees...</span>
             </div>
             </div>
             </div>
@@ -700,7 +708,7 @@
             <div class="tui-panel-content">    
                 <span class='cb-popup-text'>
                     <div class='cb-confirm-changes-sign'>
-                    	<!-- <img src='/front/images/tsoi5.png'>-->
+                        <!-- <img src='/front/images/tsoi5.png'>-->
                     </div>
                     <br>
                     Exit and <span class='cb-confirm-bold'>discard all changes</span>?
@@ -808,11 +816,11 @@
                     <button class="tui-button white-255" style="width: 80px"
                         onclick='CB.close_popup(this);'>[X] Close</button>    
 
-                	<button class="tui-button white-255-text">
-                	    <a href='/#metric:' target='_blank'>
-                			Create new query
-                		</a>
-                	</button>    
+                    <button class="tui-button white-255-text">
+                        <a href='/#metric:' target='_blank'>
+                            Create new query
+                        </a>
+                    </button>    
                     <table class="tui-table hovered-cyan width-100 cb-metrics-table">
                         <thead>
                             <tr>

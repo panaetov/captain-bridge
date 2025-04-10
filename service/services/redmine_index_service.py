@@ -156,7 +156,7 @@ class Worker:
         if not self.full:
             max_updated = await self.launcher.issue_repository.get_max_updated(
                 redmine.internal_id,
-                project_ref.id,
+                project_ref.name,
             )
 
         if not max_updated:

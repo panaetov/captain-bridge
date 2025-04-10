@@ -1244,3 +1244,16 @@ legend {
     padding: 0 4px;
     border: 3px red solid;
 }
+
+.cb-datasource-warning {
+	font-size: 1.4em;
+	padding: 0 0 1em 0;
+}
+.cb-datasource-warning a {
+    text-decoration: underline;
+}
+.cb-datasource-warning img {
+	height: 2em;
+	position: relative;
+	top: 10px;
+}
