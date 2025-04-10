@@ -231,11 +231,12 @@ class Worker:
         result = []
 
         for jo in journals_ref:
-            result.append(dict(
-                created_at=jo.created_on,
-                user=jo.user.name,
-                notes=jo.notes,
-            ))
+            if jo.notes:
+                result.append(dict(
+                    created_at=jo.created_on,
+                    user=jo.user.name,
+                    notes=jo.notes,
+                ))
 
             for detail in jo.details:
                 result.append(dict(
