@@ -1408,7 +1408,10 @@ $(function() {
         $elem.empty();
         $elem.append(
             "<div class='red-168 full-width white-text cb-metric-error-on-dashboard'>" +
-            "<span class='cb-bold'>ERROR: </span><span>" + error_text + "</span><br/>" +
+            `Query returned data with wrong format. Timeseries needs format as described ` +
+            `at <a class='cb-usual-a' target='_blank' href='https://github.com/panaetov/captain-bridge/wiki/Dashboards#requirements-for-chart-view'>here</a>` + 
+            `<br/><br/><h1>Details:</h1>` +
+            error_text +
             "</div>"
         );
     }

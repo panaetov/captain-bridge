@@ -1257,3 +1257,9 @@ legend {
 	position: relative;
 	top: 10px;
 }
+
+.cb-usual-a {
+	text-decoration: underline;
+	color: blue;
+	font-weight: bold;
+}
