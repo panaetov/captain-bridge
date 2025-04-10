@@ -27,13 +27,8 @@ class Redmine(BaseModel):
     projects: List[str]
 
 
-class Attribute(BaseModel):
-    id: str
-    name: str
-
-
 class Journal(BaseModel):
-    user: Attribute
+    user: str
     created_at: datetime.datetime
     notes: str = ''
     field: str | None = None
@@ -45,7 +40,7 @@ class Issue(BaseModel):
     internal_id: str = Field(default_factory=generate_internal_id)
     redmine: Redmine
 
-    id: str
+    key: str
     created: datetime.datetime
     updated: datetime.datetime
 
@@ -55,14 +50,14 @@ class Issue(BaseModel):
     subject: str
     description: str
 
-    assigned_to: Attribute | None
+    assigned_to: str | None
 
-    parent_id: str
-    project: Attribute
-    tracker: Attribute
-    status: Attribute
-    priority: Attribute
-    author: Attribute
+    parent_key: str
+    project: str
+    tracker: str
+    status: str
+    priority: str
+    author: str
 
     due_date: datetime.datetime | None
     done_ratio: float = 0

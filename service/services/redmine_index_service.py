@@ -187,16 +187,12 @@ class Worker:
             parent = getattr(issue_ref, 'parent', None)
 
             issue = Issue(
-                id=str(issue_ref.id),
+                key=str(issue_ref.id),
                 created=issue_ref.created_on,
                 updated=issue_ref.updated_on,
 
-                assigned_to={
-                    'id': str(assigned_to.id),
-                    'name': assigned_to.name,
-                } if assigned_to else None,
-
-                parent_id=str(parent.id) if parent else '',
+                assigned_to=assigned_to.name if assigned_to else None,
+                parent_key=str(parent.id) if parent else '',
                 redmine=redmine,
 
                 closed_at=issue_ref.closed_on,
@@ -205,31 +201,12 @@ class Worker:
                 subject=issue_ref.subject,
                 description=issue_ref.description,
 
-                project=dict(
-                    id=str(issue_ref.project.id),
-                    name=issue_ref.project.name,
-                ),
+                project=issue_ref.project.name,
+                tracker=issue_ref.tracker.name,
+                status=issue_ref.status.name,
 
-                tracker=dict(
-                    id=str(issue_ref.tracker.id),
-                    name=issue_ref.tracker.name,
-                ),
-
-                status=dict(
-                    id=str(issue_ref.status.id),
-                    name=issue_ref.status.name,
-                ),
-
-                priority=dict(
-                    id=str(issue_ref.priority.id),
-                    name=issue_ref.priority.name,
-                ),
-
-                author=dict(
-                    id=str(issue_ref.author.id),
-                    name=issue_ref.author.name,
-                ),
-
+                priority=issue_ref.priority.name,
+                author=issue_ref.author.name,
                 due_date=issue_ref.due_date,
                 done_ratio=issue_ref.done_ratio or 0,
                 estimated_hours=issue_ref.estimated_hours or 0,
@@ -256,20 +233,14 @@ class Worker:
         for jo in journals_ref:
             result.append(dict(
                 created_at=jo.created_on,
-                user=dict(
-                    id=str(jo.user.id),
-                    name=jo.user.name,
-                ),
+                user=jo.user.name,
                 notes=jo.notes,
             ))
 
             for detail in jo.details:
                 result.append(dict(
                     created_at=jo.created_on,
-                    user=dict(
-                        id=str(jo.user.id),
-                        name=jo.user.name,
-                    ),
+                    user=jo.user.name,
                     field=detail['name'],
                     value_from=detail['old_value'],
                     value_to=detail['new_value'],

@@ -128,6 +128,14 @@ async def apply_1(db):
             ("key", pymongo.ASCENDING),
             unique=True,
         ),
+        Index(
+            "datasource_jira_issues_public",
+            ("changes.created", pymongo.ASCENDING),
+        ),
+        Index(
+            "datasource_jira_issues_public",
+            ("comments.created", pymongo.ASCENDING),
+        ),
 
         # JIRA.LOGS
         Index(
@@ -312,7 +320,15 @@ async def apply_3(db):
         ),
         Index(
             "datasource_redmine_issues",
-            ("id", pymongo.ASCENDING),
+            ("created", pymongo.ASCENDING),
+        ),
+        Index(
+            "datasource_redmine_issues",
+            ("updated", pymongo.ASCENDING),
+        ),
+        Index(
+            "datasource_redmine_issues",
+            ("key", pymongo.ASCENDING),
             ("redmine_internal_id", pymongo.ASCENDING),
             unique=True,
         ),
@@ -324,7 +340,11 @@ async def apply_3(db):
         ),
         Index(
             "datasource_redmine_issues_public",
-            ("created_at", pymongo.ASCENDING),
+            ("created", pymongo.ASCENDING),
+        ),
+        Index(
+            "datasource_redmine_issues_public",
+            ("updated", pymongo.ASCENDING),
         ),
         Index(
             "datasource_redmine_issues_public",
@@ -332,7 +352,7 @@ async def apply_3(db):
         ),
         Index(
             "datasource_redmine_issues_public",
-            ("author.name", pymongo.ASCENDING),
+            ("author", pymongo.ASCENDING),
         ),
 
         Index(

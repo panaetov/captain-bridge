@@ -96,7 +96,7 @@ class IssueRepository(Repository):
     def get_unique_key(self, issue: Issue):
         return {
             "redmine_internal_id": issue.redmine.internal_id,
-            "id": issue.id,
+            "key": issue.key,
         }
 
     async def get_max_updated(self, redmine_internal_id, project_id):
