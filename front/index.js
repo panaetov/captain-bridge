@@ -762,8 +762,13 @@ $(function() {
         $details.empty();
 
         if ($type.val() == 'query') {
+            var docs = (
+                "<a class='cb-input-collection-doc' target='_blank' href='" +
+                "https://github.com/panaetov/captain-bridge/wiki/Metrics#query'>?</a>"
+            );
+
             $details.append(
-                "<span class='cb-float-left'>Pipeline............:&nbsp</span>"
+                `<span class='cb-float-left'>Pipeline${docs}........:&nbsp</span>`
             );
 
             var source = JSON.stringify(
@@ -794,8 +799,12 @@ $(function() {
         }
 
         if ($type.val() == 'rpc') {
+            var docs = (
+                "<a class='cb-input-collection-doc' target='_blank' href='" +
+                "https://github.com/panaetov/captain-bridge/wiki/Metrics#rpc'>?</a>"
+            );
             $details.append(
-                "<span>URL.................: </span>"
+                `<span>URL${docs}.............: </span>`
             );
             $url = $(
                 "<input class='cb-action-url cb-action-value tui-input' />"
@@ -805,8 +814,13 @@ $(function() {
         }
 
         if ($type.val() == 'python') {
+            var docs = (
+                "<a class='cb-input-collection-doc' target='_blank' href='" +
+                "https://github.com/panaetov/captain-bridge/wiki/Metrics#python'>?</a>"
+            );
+
             $details.append(
-                "<span class='cb-float-left'>Code................:&nbsp</span>"
+                `<span class='cb-float-left'>Code${docs}............:&nbsp</span>`
             );
             var source = stage.action.code || "print(INPUTS)\n\nreturn []";
             $pipeline = $(

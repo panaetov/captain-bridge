@@ -1239,10 +1239,10 @@ legend {
 
 .cb-input-collection-doc {
     margin: 0 7px;
-    background: white;
-    color: black;
+    background: #00a800;
+    color: white;
     padding: 0 4px;
-    border: 3px red solid;
+    border: 1px white solid;
 }
 
 .cb-datasource-warning {
