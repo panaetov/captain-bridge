@@ -269,7 +269,7 @@ async def apply_2(db):
         ),
         Index(
             "datasource_gitlab_commits_public",
-            ("created_at", pymongo.ASCENDING),
+            ("created", pymongo.ASCENDING),
         ),
         Index(
             "datasource_gitlab_commits_public",

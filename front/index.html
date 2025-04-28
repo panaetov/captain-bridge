@@ -64,7 +64,6 @@
                         </a>
                     </li>
 
-
                     <li class='cb-dropdown cb-header-item cb-float-right' id='cb-sources-menu'>
                         <a class="cursor-pointer inline">Data sources &#9776;</a>
                         <div class="cb-dropdown-content">
@@ -77,7 +76,7 @@
                                 <img class='cb-header-icon' src='/front/images/redmine.ico'/>
                                 REDMINE
                             </a>
-                            <a class='cb-header-link' href="#">
+                            <a class='cb-header-link' href="/#gitlabs" onclick="CB.render_gitlabs_table();">
                                 <img class='cb-header-icon' src='/front/images/gitlab.ico'/>
                                 GITLAB
                             </a>
@@ -199,6 +198,25 @@
 
             </fieldset>
 
+            <fieldset class="tui-fieldset cb-innerblock" id='cb-gitlabs-table'>
+                <legend class="center">Gitlab sources</legend>
+                <span class="tui-fieldset-button left"><span class="green-255-text">■</span></span>    
+                <span class="tui-fieldset-text" style="margin-left: 50px;">&nbsp;1:1&nbsp;</span>    
+
+                <button class="tui-button white-255-text" onclick="CB.render_gitlab_form();">Create</button>    
+
+                <table class="tui-table hovered-cyan width-100">
+                    <thead>
+                        <tr>
+                            <th>Indexing status</th>
+                            <th>Name</th>
+                            <th>URL</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </fieldset>
 
             <fieldset class="tui-fieldset cb-innerblock" id='cb-metrics-table'>
                 <legend class="center">Queries</legend>
@@ -217,6 +235,51 @@
                     </tbody>
                 </table>
 
+            </fieldset>
+
+            <fieldset class="tui-fieldset cb-innerblock" id='cb-gitlab-form'>
+                <legend class="center"></legend>
+                <span class="tui-fieldset-button left"><span class="green-255-text">■</span></span>    
+
+                <button class="tui-button white-255-text" onclick="CB.save_gitlab()">Save</button>    
+                <button class="tui-button red-168 white-255-text" onclick="CB.delete_gitlab_onclick()">[X]Delete</button>    
+                <button class="tui-button red-168 cb-exit-button white-text" onclick="CB.render_gitlabs_table();">Exit</button> 
+
+                <div class="red-168 full-width white-text" id='cb-gitlab-form-errors'>
+                </div>
+
+                <br/>
+                Internal ID..............: <input class='cb-internal-id-input disabled tui-input' disabled class="tui-input" value="" /><br>
+                Name.....................: <input class='cb-name-input tui-input' value="" /><br>
+                URL......................: <input class='cb-url-input tui-input' value="" /><br>
+                Personal token...........: <input type='password' class='cb-token-input tui-input' value="" /><br>
+                <span class='cb-textarea-label'>Projects.................:</span>&nbsp<textarea class='cb-projects-input tui-input' value="" ></textarea><br>
+
+                <h1>Indexing</h1>
+                Status............: <input disabled class='cb-index-status-input disabled tui-input' value="" /><br>
+                Indexed at........: <input disabled class='cb-indexed-at-input disabled tui-input' value="" /><br>
+
+                <button class="tui-button"
+                    onclick="CB.refresh_gitlab_logs_onclick(this)"
+                    >&#10148; Refresh logs</button>    
+
+                <button class="tui-button"
+                    onclick="CB.indexify_gitlab_onclick(this)"
+                    >&#9923; Indexify gitlab</button>    
+
+                <button class="tui-button orange-168 white-text"
+                    onclick="CB.indexify_gitlab_onclick(this, true)"
+                    >&#9923; Indexify gitlab [last 3 month] </button>    
+
+                <div id='cb-gitlab-indexify-progress-bar'
+                    class="tui-progress-bar inline-block valign-middle">
+                    <span class="tui-indeterminate"></span>
+                </div>
+
+                <div id='cb-gitlab-indexify-log'> 
+
+                </div>
+ 
             </fieldset>
 
             <fieldset class="tui-fieldset cb-innerblock" id='cb-redmine-form'>

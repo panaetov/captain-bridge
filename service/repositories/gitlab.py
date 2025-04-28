@@ -17,8 +17,8 @@ class GitlabRepository(Repository):
     def to_record_fields(self, entity_or_dict, updated_fields=None):
         fields = super().to_record_fields(entity_or_dict, updated_fields)
 
-        if not fields["private_token"]:
-            fields.pop("private_token")
+        if not fields["token"]:
+            fields.pop("token")
 
         fields.pop("logs")
         fields.pop("indexed_at")

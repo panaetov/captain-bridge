@@ -394,6 +394,13 @@ textarea:focus {
     overflow: auto;
 }
 
+#cb-gitlab-indexify-log {
+    background: black;
+    padding: 0.5em;
+    max-height: 400px;
+    overflow: auto;
+}
+
 
 #cb-jira-indexify-log {
     background: black;
@@ -404,6 +411,24 @@ textarea:focus {
 
 #cb-jira-indexify-progress-bar {
     visibility: hidden;
+}
+
+#cb-gitlab-indexify-progress-bar {
+    visibility: hidden;
+}
+
+.cb-gitlab-log-item-created-at {
+    margin-right: 0.5em;
+    background: #eeee;
+    color: black;
+}
+
+.cb-gitlab-log-item-level {
+    margin-right: 0.5em;
+    width: 60px;
+    display: inline-block;
+    text-align: center;
+    padding: 0.2em;
 }
 
 #cb-redmine-indexify-progress-bar {

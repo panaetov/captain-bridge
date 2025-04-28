@@ -23,4 +23,7 @@ class GitlabService:
         return result
 
     def get_commits(self, project_ref):
-        return project_ref.commits.list(iterator=True)
+        return project_ref.commits.list(
+            iterator=True,
+            per_page=100,
+        )

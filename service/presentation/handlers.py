@@ -17,11 +17,13 @@ from pytimeparse import parse as parse_interval
 
 from service import utils
 from service.entities.jira import Jira, Project
-from service.entities.redmine import Redmine, Issue as RedmineIssue
+from service.entities.redmine import Redmine
+from service.entities.gitlab import Gitlab
 from service.entities.metric import Dashboard, Metric, Stage
 from service.entities.planning import DonePercent, Planning
 from service.repositories import jira as jira_repositories
 from service.repositories import redmine as redmine_repositories
+from service.repositories import gitlab as gitlab_repositories
 from service.repositories.metrics import DashboardRepository, MetricRepository
 from service.repositories.plannings import (
     DayOffRepository,
@@ -32,6 +34,7 @@ from service.repositories.plannings import (
 from service.services.dry_run_service import DryRunService
 from service.services.jira_index_service import JiraIndexService
 from service.services.redmine_index_service import RedmineIndexService
+from service.services.gitlab_index_service import GitlabIndexService
 from service.services.run_service import RunService
 
 logger = logging.getLogger(__name__)
@@ -423,6 +426,10 @@ def _get_jira_repository(request: Request):
 
 def _get_redmine_repository(request: Request):
     return request.app.container.redmine_repositories.redmines
+
+
+def _get_gitlab_repository(request: Request):
+    return request.app.container.gitlab_repositories.gitlabs
 
 
 def _get_project_repository(request: Request):
@@ -992,6 +999,20 @@ async def planing_calendar_handler(
     }
 
 
+def _dump_gitlab(gitlab: Gitlab):
+    return {
+        "internal_id": gitlab.internal_id,
+        "name": gitlab.name,
+        "url": gitlab.url,
+        "token": PASSWORD_NOT_CHANGED,
+        "projects": gitlab.projects,
+        "indexed_at": gitlab.indexed_at,
+        "index_period": gitlab.index_period,
+        "logs": gitlab.logs,
+        "status": gitlab.status,
+    }
+
+
 def _dump_redmine(redmine: Redmine):
     return {
         "internal_id": redmine.internal_id,
@@ -1020,6 +1041,17 @@ async def get_redmines_handler(
     return [_dump_redmine(d) for d in redmines]
 
 
+@router.get("/sources/gitlabs")
+async def get_gitlabs_handler(
+    gitlab_repository: Annotated[
+        gitlab_repositories.GitlabRepository, Depends(_get_gitlab_repository)
+    ],
+):
+    gitlabs = await gitlab_repository.all()
+
+    return [_dump_gitlab(d) for d in gitlabs]
+
+
 @router.get("/sources/redmines/{internal_id}")
 async def get_one_redmine_handler(
     redmine_repository: Annotated[
@@ -1039,6 +1071,25 @@ async def get_one_redmine_handler(
     return _dump_redmine(redmines[0])
 
 
+@router.get("/sources/gitlabs/{internal_id}")
+async def get_one_gitlab_handler(
+    gitlab_repository: Annotated[
+        gitlab_repositories.GitlabRepository, Depends(_get_gitlab_repository)
+    ],
+    internal_id: str,
+):
+    gitlabs = await gitlab_repository.filter_by_internal_id(
+        [
+            internal_id,
+        ]
+    )
+
+    if not gitlabs:
+        raise HTTPException(status_code=404)
+
+    return _dump_gitlab(gitlabs[0])
+
+
 @router.delete("/sources/redmines/{internal_id}", dependencies=[Depends(_check_ro)])
 async def delete_redmine_handler(
     redmine_repository: Annotated[
@@ -1049,6 +1100,53 @@ async def delete_redmine_handler(
     await redmine_repository.delete_by_internal_id(internal_id)
     return {
         "internal_id": internal_id,
+    }
+
+
+@router.delete("/sources/gitlabs/{internal_id}", dependencies=[Depends(_check_ro)])
+async def delete_gitlab_handler(
+    gitlab_repository: Annotated[
+        gitlab_repositories.GitlabRepository, Depends(_get_gitlab_repository)
+    ],
+    internal_id: str,
+):
+    await gitlab_repository.delete_by_internal_id(internal_id)
+    return {
+        "internal_id": internal_id,
+    }
+
+
+class SaveGitlabRequest(pydantic.BaseModel):
+    internal_id: str | None = None
+    name: str
+    url: str
+    projects: List[str]
+    token: str
+
+
+@router.post("/sources/gitlabs", dependencies=[Depends(_check_ro)])
+async def save_gitlabs_handler(
+    body: SaveGitlabRequest,
+    gitlab_repository: Annotated[
+        gitlab_repositories.GitlabRepository, Depends(_get_gitlab_repository)
+    ],
+):
+    data = dict(
+        internal_id=body.internal_id,
+        name=body.name,
+        url=body.url,
+        token=body.token if body.token != PASSWORD_NOT_CHANGED else "",
+        projects=body.projects,
+    )
+    if not data["internal_id"]:
+        data.pop("internal_id")
+
+    gitlab = Gitlab(**data)
+
+    await gitlab_repository.save(gitlab)
+
+    return {
+        "internal_id": gitlab.internal_id,
     }
 
 
@@ -1121,6 +1219,42 @@ async def redmine_websocket_endpoint(
 
         await index_service.indexify(
             redmine_internal_id=redmine_internal_id,
+            watcher_callback=report_results,
+            full=mode == "full",
+        )
+        await websocket.close()
+        break
+
+
+def _get_gitlab_index_service(websocket: WebSocket):
+    return websocket.app.container.gitlab_index_service
+
+
+@router.websocket("/sources/gitlabs/indexify")
+async def gitlab_websocket_endpoint(
+    websocket: WebSocket,
+    index_service: Annotated[
+        GitlabIndexService, Depends(_get_gitlab_index_service)
+    ],
+):
+    await websocket.accept()
+    while True:
+        message = await websocket.receive_text()
+        gitlab_internal_id, mode = message.split("_")
+
+        async def report_results(message, level):
+            await websocket.send_text(
+                utils.serialize_json(
+                    {
+                        "created_at": datetime.datetime.utcnow(),
+                        "level": level,
+                        "message": message,
+                    }
+                )
+            )
+
+        await index_service.indexify(
+            gitlab_internal_id=gitlab_internal_id,
             watcher_callback=report_results,
             full=mode == "full",
         )

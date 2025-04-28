@@ -15,11 +15,12 @@ class Gitlab(BaseModel):
     internal_id: str = Field(default_factory=generate_internal_id)
     name: str
     url: str
-    private_token: str
+    token: str
     logs: List[IndexLog] = []
     indexed_at: datetime.datetime | None = None
     status: str = "indexing"
     projects: List[str] = []
+    index_period: int = 300
 
 
 class CommitStats(BaseModel):
@@ -34,7 +35,7 @@ class Commit(BaseModel):
     internal_id: str = Field(default_factory=generate_internal_id)
     commit_id: str
     title: str
-    created_at: datetime.datetime
+    created: datetime.datetime
     author: str
     project_id: int
     project_name: str

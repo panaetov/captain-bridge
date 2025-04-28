@@ -43,8 +43,10 @@ class Repository:
             await self.get_table().insert_one(data)
         except pymongo.errors.DuplicateKeyError:
             await self.update_one(entity, updated_fields)
+            return False
         else:
             logger.info(f"Created entity: {entity}")
+            return True
 
     async def delete_by_internal_id(self, internal_id):
         await self.get_table().delete_one({"internal_id": internal_id})

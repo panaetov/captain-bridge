@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import datetime
 
@@ -27,7 +28,7 @@ class GitlabIndexService:
     def build_gitlab_service(self, gitlab: Gitlab):
         gitlab_service = self.gitlab_service_factory(
             gitlab.url,
-            gitlab.private_token,
+            gitlab.token,
         )
         return gitlab_service
 
@@ -120,26 +121,55 @@ class Worker:
         for project_ref in service.get_projects(gitlab.projects):
             project_name = project_ref.attributes['name']
 
-            logger.info(f"Indexifying project {project_name}")
+            self.logger.info(f"Indexifying project {project_name}")
             await self.indexify_commits(gitlab, service, project_ref)
 
         await self.launcher.commit_repository.refresh_presentation_view()
 
     async def indexify_commits(self, gitlab, service, project_ref):
+        chunk = []
+
         for commit_ref in service.get_commits(project_ref):
-            commit = Commit(
-                commit_id=commit_ref.id,
-                project_id=project_ref.id,
-                gitlab=gitlab,
-                project_name=project_ref.attributes['name'],
-                title=commit_ref.title,
-                created_at=commit_ref.created_at,
-                author=commit_ref.author_name,
-                is_merge=len(commit_ref.parent_ids) > 1,
-                stats=self.commit_stat(commit_ref),
-                branches=[r['name'] for r in commit_ref.refs('branch', get_all=True)],
-            )
-            await self.launcher.commit_repository.save(commit)
+            chunk.append(commit_ref)
+
+            if len(chunk) > 50:
+                results = await asyncio.gather(*[
+                    self.save_commit(gitlab, project_ref, commit_ref)
+                    for commit_ref in chunk
+                ])
+                if any(not is_new for is_new in results):
+                    break
+
+                chunk = []
+
+        if len(chunk) > 1:
+            await asyncio.gather(*[
+                self.save_commit(gitlab, project_ref, commit_ref)
+                for commit_ref in chunk
+            ])
+
+    async def save_commit(self, gitlab, project_ref, commit_ref):
+        commit = await asyncio.to_thread(
+            self.build_commit,
+            gitlab, project_ref, commit_ref,
+        )
+        self.logger.info(f"Inserting commit {commit.commit_id}, title '{commit.title}'.")
+        return await self.launcher.commit_repository.save(commit)
+
+    def build_commit(self, gitlab, project_ref, commit_ref):
+        commit = Commit(
+            commit_id=commit_ref.id,
+            project_id=project_ref.id,
+            gitlab=gitlab,
+            project_name=project_ref.attributes['name'],
+            title=commit_ref.title,
+            created=commit_ref.created_at,
+            author=commit_ref.author_name,
+            is_merge=len(commit_ref.parent_ids) > 1,
+            stats=self.commit_stat(commit_ref),
+            branches=[r['name'] for r in commit_ref.refs('branch', get_all=True)],
+        )
+        return commit
 
     def commit_stat(self, commit_ref):
         diffs = commit_ref.diff(get_all=True)

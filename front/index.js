@@ -123,6 +123,12 @@ $(function() {
             save: GLOBALS.BACKEND_HOST + '/sources/redmines',
             indexify: GLOBALS.WS_BACKEND_HOST + '/sources/redmines/indexify'
         },
+        gitlabs: {
+            delete: GLOBALS.BACKEND_HOST + '/sources/gitlabs',
+            list: GLOBALS.BACKEND_HOST + '/sources/gitlabs',
+            save: GLOBALS.BACKEND_HOST + '/sources/gitlabs',
+            indexify: GLOBALS.WS_BACKEND_HOST + '/sources/gitlabs/indexify'
+        },
         issues: {
             options: GLOBALS.BACKEND_HOST + '/sources/issues/options'
         },
@@ -194,6 +200,49 @@ $(function() {
             return '&#128512;';
         }
 
+    }
+
+    CB.render_gitlabs_table = function() {
+        var clean = CB.confirm_form_close(function() {
+            CB.render_gitlabs_table();
+        });
+
+        if (!clean) {
+            return;
+        }
+
+        location.hash = "gitlabs";
+        CB.set_active_menu("#cb-sources-menu");
+
+        CB.hide_all_innerblocks();
+        var $panel = $("#cb-gitlabs-table");
+        var $tbody = $panel.find('tbody')
+
+        $.ajax({
+            url: URLS.gitlabs.list,
+            dataType: 'json',
+            crossDomain: true,
+
+            success: function(gitlabs) {
+                $tbody.empty();
+
+                var i;
+                for(i=0; i<gitlabs.length; i++) {
+                    var d = gitlabs[i];
+
+                    var status_html = CB.render_source_status(d.status);
+                    $tbody.append(
+                        "<tr onclick=\"CB.render_gitlab_form('" + d.internal_id + "');\">" +
+                        `<td class='${CB.get_source_status_class(d.status)}'>` + status_html + "</td>" +
+                        "<td>" + d.name + "</td>" +
+                        "<td>" + d.url + "</td>" +
+                        "</tr>"
+                    );
+                }
+                $panel.show(100);
+            },
+            error: CB.process_http_error
+        });
     }
 
     CB.render_redmines_table = function() {
@@ -282,6 +331,19 @@ $(function() {
         });
     }
 
+    CB.onchange_gitlab_auth_method = function() {
+        var $form = $("#cb-gitlab-form");
+        var method = $form.find(".cb-auth-method-input").val();
+
+        if (method == 'basic') {
+            $form.find(".cb-auth-method-basic-section").show();
+            $form.find(".cb-auth-method-token-section").hide();
+        } else {
+            $form.find(".cb-auth-method-basic-section").hide();
+            $form.find(".cb-auth-method-token-section").show();
+        }
+    }
+
     CB.onchange_redmine_auth_method = function() {
         var $form = $("#cb-redmine-form");
         var method = $form.find(".cb-auth-method-input").val();
@@ -292,6 +354,76 @@ $(function() {
         } else {
             $form.find(".cb-auth-method-basic-section").hide();
             $form.find(".cb-auth-method-token-section").show();
+        }
+    }
+
+    CB.render_gitlab_form = function(internal_id, preserve_before_update) {
+        var clean = CB.confirm_form_close(function() {
+            CB.render_gitlab_form(internal_id, preserve_before_update);
+        });
+
+        if (!clean) {
+            return;
+        }
+
+        location.hash = `gitlab:${internal_id || ''}`;
+        CB.set_active_menu("#cb-sources-menu");
+
+        var $form = $("#cb-gitlab-form");
+        var $legend = $("#cb-gitlab-form > legend");
+
+        if (!preserve_before_update) {
+            CB.empty_gitlab_form();
+        }
+
+        var _finish_form = function() {
+            CB.hide_all_innerblocks();
+            var $panel = $("#cb-gitlab-form");
+
+            CB.onchange_gitlab_auth_method();
+            $panel.show(100);
+        }
+
+        if (internal_id) {
+            $.ajax({
+                url: URLS.gitlabs.list + "/" + internal_id,
+
+                dataType: 'json',
+                crossDomain: true,
+
+                success: function(gitlab) {
+                    $legend.text("gitlab [" + gitlab.name + "]");
+                    $form.find(".cb-internal-id-input").val(gitlab.internal_id);
+                    $form.find(".cb-name-input").val(gitlab.name);
+                    $form.find(".cb-url-input").val(gitlab.url);
+                    $form.find(".cb-token-input").val(gitlab.token);
+                    $form.find(".cb-projects-input").val(
+                        (gitlab.projects || []).join("\n")
+                    );
+                    $form.find(".cb-index-period-input").val(gitlab.index_period);
+                    $form.find(".cb-index-status-input").val(gitlab.status);
+
+                    $form.find(".cb-indexed-at-input").val(
+                        iso_to_human(gitlab.indexed_at, 'UTC')
+                    );
+
+                    var i;
+                    for (i=0; i<gitlab.logs.length; ++i) {
+                        CB.add_gitlab_log(gitlab.logs[i]);
+                    }
+
+                    if (!gitlab.logs.length) {
+                        var $log_container = $("#cb-gitlab-indexify-log");
+                        $log_container.html("No logs yet...");
+                    }
+                    _finish_form();
+                },
+                error: CB.process_http_error
+            });
+
+        } else {
+            $legend.html("Creating a new gitlab source");
+            _finish_form();
         }
     }
 
@@ -511,6 +643,36 @@ $(function() {
         );
     }
 
+    CB.refresh_gitlab_logs_onclick = function() {
+        var $form = $("#cb-gitlab-form");
+        var internal_id = $form.find(".cb-internal-id-input").val();
+        if (!internal_id) {
+            return;
+        }
+
+        $.ajax({
+            url: URLS.gitlabs.list + "/" + internal_id,
+
+            dataType: 'json',
+            crossDomain: true,
+
+            success: function(gitlab) {
+                $("#cb-gitlab-indexify-log").empty();
+
+                var i;
+                for (i=0; i<gitlab.logs.length; ++i) {
+                    CB.add_gitlab_log(gitlab.logs[i]);
+                }
+
+                if (!gitlab.logs.length) {
+                    var $log_container = $("#cb-gitlab-indexify-log");
+                    $log_container.html("No logs yet...");
+                }
+            },
+            error: CB.process_http_error
+        });
+    }
+
     CB.refresh_redmine_logs_onclick = function() {
         var $form = $("#cb-redmine-form");
         var internal_id = $form.find(".cb-internal-id-input").val();
@@ -570,6 +732,56 @@ $(function() {
             error: CB.process_http_error
         });
     }
+
+    CB.indexify_gitlab_onclick = function(button, full) {
+        var $button = $(button);
+
+        var internal_id = $("#cb-gitlab-form").find(".cb-internal-id-input").val();
+        if (!internal_id || !CB._FORM_CLEAN) {
+            CB.show_popup('Cannot do it', 'Changes are not saved yet. Click Save button before proceeding. ');
+            return;
+        }
+
+        $("#cb-gitlab-indexify-progress-bar").css("visibility", "visible");
+
+        var ws_proto = 'wss';
+        if (location.protocol == 'http:') {
+            ws_proto = 'ws';
+        }
+
+        var ws_url = `${ws_proto}://${location.host}${URLS.gitlabs.indexify}`
+        let socket = new WebSocket(ws_url);
+
+        socket.onopen = function(e) {
+            socket.send(internal_id + "_" + (full? 'full': 'delta'));
+        };
+
+        socket.onmessage = function(event) {
+            console.log(`[message] Данные получены с сервера: ${event.data}`);
+            var log = JSON.parse(event.data);
+            CB.add_gitlab_log(log, true);
+        };
+
+        socket.onclose = function(event) {
+            $("#cb-gitlab-indexify-progress-bar").css("visibility", "hidden");
+            if (event.wasClean) {
+                console.log(`[close] Соединение закрыто чисто, код=${event.code} причина=${event.reason}`);
+            } else {
+                // например, сервер убил процесс или сеть недоступна
+                // обычно в этом случае event.code 1006
+                var error = 'Соединение прервано. Ошибка на сервере.';
+                CB.show_popup("Request failed", error);
+            }
+            CB.render_gitlab_form(internal_id, true);
+        };
+
+        socket.onerror = function(error) {
+            $("#cb-gitlab-indexify-progress-bar").css("visibility", "hidden");
+            CB.show_popup("Request failed", error);
+        };
+    }
+
+
 
     CB.indexify_redmine_onclick = function(button, full) {
         var $button = $(button);
@@ -683,6 +895,8 @@ $(function() {
             "<option value='datasource_jira_issues_public'>Jira issues</option>" +
             "<option value='datasource_jira_sprints_public'>Jira sprints</option>" +
             "<option value='datasource_redmine_issues_public'>Redmine issues</option>" +
+            "<option value='datasource_redmine_issues_public'>Redmine issues</option>" +
+            "<option value='datasource_gitlab_commits_public'>Gitlab commits</option>" +
             "</select>"
             );
             $collection_name.val(stage_input.collection_name || '');
@@ -1878,11 +2092,11 @@ $(function() {
             itemWrap: true,
             itemWidth: 500,
             legend: {
-                verticalAlign: "bottom",
-                horizontalAlign: "left",
+                verticalAlign: "center",
+                horizontalAlign: "right",
                 fontFamily: "Lucida Console, monospace",
-                itemWrap: true,
-                itemWidth: 500,
+                itemWrap: false,
+                itemWidth: 300,
                 fontWeight: "normal",
                 fontSize: 18,
 
@@ -2634,6 +2848,21 @@ $(function() {
         }
     }
 
+    CB.empty_gitlab_form = function() {
+        $("#cb-gitlab-form .cb-internal-id-input").val('');
+        $("#cb-gitlab-form .cb-name-input").val('');
+        $("#cb-gitlab-form .cb-url-input").val('');
+        $("#cb-gitlab-form .cb-token-input").val('');
+        $("#cb-gitlab-form .cb-indexed-at-input").val('');
+        $("#cb-gitlab-form .cb-index-period-input").val(60);
+        $("#cb-gitlab-form .cb-index-status-input").val('');
+        $("#cb-gitlab-form-errors").empty();
+        $("#cb-gitlab-form-errors").hide();
+        $("#cb-gitlab-indexify-log").empty();
+        $("#cb-gitlab-form .cb-projects-input").val('');
+        $("#cb-gitlab-custom-fields tbody").html('');
+    }
+
     CB.empty_redmine_form = function() {
         $("#cb-redmine-form .cb-internal-id-input").val('');
         $("#cb-redmine-form .cb-name-input").val('');
@@ -2677,6 +2906,52 @@ $(function() {
 
         return url.protocol === "http:" || url.protocol === "https:";
     }
+
+    CB.validate_gitlab_form = function(payload) {
+        var $errors = $("#cb-gitlab-form-errors");
+        $errors.empty();
+
+        if (!payload.name) {
+            CB.add_form_error($errors, "Name is empty.");
+            return false;
+        }
+
+        if (!payload.url) {
+            CB.add_form_error($errors, "URL is empty.");
+            return false;
+        }
+
+        if (!CB.is_valid_url(payload.url)) {
+            CB.add_form_error($errors, "URL is not a valid URL.");
+            return false;
+        }
+
+        if (payload.auth_method == 'basic') {
+            if (!payload.login) {
+                CB.add_form_error($errors, "Login is empty.");
+                return false;
+               }
+
+            if (!payload.password) {
+                CB.add_form_error($errors, "Password is empty.");
+                return false;
+            }
+        } else {
+            if (!payload.token) {
+                CB.add_form_error($errors, "Personal token is empty.");
+                return false;
+            }
+
+        }
+
+        if (!payload.projects.length) {
+            CB.add_form_error($errors, "Projects are not set.");
+            return false;
+        }
+
+        return true;
+    }
+
 
     CB.validate_redmine_form = function(payload) {
         var $errors = $("#cb-redmine-form-errors");
@@ -2785,6 +3060,54 @@ $(function() {
         }
 
         return true;
+    }
+
+    CB.save_gitlab = function() {
+        $form = $("#cb-gitlab-form");
+        var projects = [];
+        var raw_projects = $form.find(".cb-projects-input").val().split(/\s+/);
+        var i;
+        for(i=0; i<raw_projects.length; ++i) {
+            var project_name = raw_projects[i].trim();
+            if (project_name) {
+                projects.push(project_name);
+            }
+        }
+
+        var payload = {
+            internal_id: $form.find(".cb-internal-id-input").val(),
+            name: $form.find('.cb-name-input').val().trim(),
+            url: $form.find(".cb-url-input").val().trim(),
+            token: $form.find(".cb-token-input").val().trim(),
+            projects: projects
+        }
+
+        var is_valid = CB.validate_gitlab_form(payload);
+        if (!is_valid) {
+            $("#cb-gitlab-form-errors").show();
+            return;
+        } else {
+            $("#cb-gitlab-form-errors").hide();
+        }
+
+        $.ajax({
+            url: URLS.gitlabs.save,
+            method: 'post',
+            dataType: 'json',
+            crossDomain: true,
+            contentType: "application/json",
+
+            data: JSON.stringify(payload),
+
+            success: function(result) {
+                CB._FORM_CLEAN = true;
+                CB.show_popup('OK', 'Source is saved');
+                CB.render_gitlab_form(result.internal_id);
+                location.hash = `gitlab:${result.internal_id || ''}`;
+                CB.set_active_menu("#cb-sources-menu");
+            },
+            error: CB.process_http_error
+        });
     }
 
     CB.save_redmine = function() {
@@ -3096,6 +3419,26 @@ $(function() {
         }
     }
 
+    CB.add_gitlab_log = function(log, prepend) {
+        var $log_container = $("#cb-gitlab-indexify-log");
+
+        var $item = $(
+            `<div class='cb-gitlab-log-item'>` +
+            `<span class='cb-gitlab-log-item-created-at'>${iso_to_human(log.created_at)}</span>` +
+            `<span class='cb-gitlab-log-item-level ${CB.get_log_level_class(log.level)}'>${log.level}</span>` +
+            `<span class='cb-gitlab-log-item-message'></span>` +
+            `<br>` +
+            `</div>`
+        );
+        // to prevent injections
+        $item.find(".cb-gitlab-log-item-message").text(log.message);
+
+        if (prepend) {
+            $log_container.prepend($item);
+        } else {
+            $log_container.append($item);
+        }
+    }
 
     CB.add_jira_log = function(log, prepend) {
         var $log_container = $("#cb-jira-indexify-log");
@@ -5333,6 +5676,9 @@ $(function() {
     } else if (HASH == '#redmines') {
         CB.render_redmines_table();
 
+    } else if (HASH == '#gitlabs') {
+        CB.render_gitlabs_table();
+
     } else if (HASH.startsWith("#jira:")) {
         var internal_id = HASH.split(":")[1];
         CB.render_jira_form(internal_id);
@@ -5340,6 +5686,10 @@ $(function() {
     } else if (HASH.startsWith("#redmine:")) {
         var internal_id = HASH.split(":")[1];
         CB.render_redmine_form(internal_id);
+
+    } else if (HASH.startsWith("#gitlab:")) {
+        var internal_id = HASH.split(":")[1];
+        CB.render_gitlab_form(internal_id);
 
     } else if (HASH.startsWith("#metric:")) {
         var internal_id = HASH.split(":")[1];
