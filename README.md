@@ -4,6 +4,9 @@ Captain Bridge is data-driven team management tool.
 
 Build metrics for your team using data of Jira, Git and many other sources. Also, plan workload of your team with automatic Gantt charts.
 
+# Contacts
+Any questions? Go to https://t.me/alexey_panaetov
+
 # Demo
 [Go](http://51.250.25.115:9000/#dashboard:656f6c909290484cabc32be3837adb7f)
 
